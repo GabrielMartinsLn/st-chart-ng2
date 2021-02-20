@@ -124,5 +124,8 @@
       }
     }
   },
-  "defaultProject": "st-charts"
+  "defaultProject": "st-charts",
+  "cli": {
+    "analytics": false
+  }
 }
