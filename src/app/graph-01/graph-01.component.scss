@@ -1,11 +1,34 @@
 :host {
     display: block;
-    width: 800px;
-    height: 500px;
+    width: 900px;
+    max-width: 100%;
     overflow: hidden;
 
-    border: solid thin #ccc;
+    box-shadow: 0px 0px 2px 0px #ccc;
     background: #fff;
 
     margin: 1rem auto;
+}
+
+.x-selectors {
+    padding: 0.5rem;
+    display: flex;
+
+    .x-selector-btn {
+        flex: 1 1 auto;
+        margin: 0.5rem;
+
+        background-color: #0ea1e8;
+        border: none;
+        color: #fff;
+        font-weight: bolder;
+        font-size: 18px;
+        padding: 0.3rem;
+        border-radius: 1rem;
+
+        &:disabled {
+            background: none;
+            color: rgba(#333, 0.6);
+        }
+    }
 }

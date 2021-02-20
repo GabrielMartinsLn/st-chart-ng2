@@ -1,5 +1,5 @@
-<div style="display: block;">
-    <canvas baseChart width="400" height="400"
+<div *ngIf="ready">
+    <canvas baseChart width="400" height="256"
       [datasets]="lineChartData"
       [labels]="lineChartLabels"
       [options]="lineChartOptions"
@@ -10,3 +10,9 @@
     </canvas>
 </div>
   
+<div class="x-selectors">
+    <button class="x-selector-btn" disabled>Live</button>
+    <button class="x-selector-btn">Month</button>
+    <button class="x-selector-btn">Prev. Match</button>
+    <button class="x-selector-btn">Prev. Month</button>
+</div>
