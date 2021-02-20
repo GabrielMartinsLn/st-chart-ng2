@@ -1,0 +1,30 @@
+<div class="wrap" *ngIf="item">
+    <div class="col">
+        <div class="col-item">{{ date }}</div>
+        <!-- <div class="col-item"><img src="/assets/Upcoming.svg" width="24"></div> -->
+        <div class="col-item">
+            <div class="point-ind-wrap">
+                <div class="point-ind"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="col-item">
+            <div class="item-badge">{{ finalScore }}</div>
+        </div>
+        <div class="col-item">
+            <div>{{ score }}</div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="col-item"><img src="/assets/Upcoming.svg" width="24"></div>
+        <div class="col-item">
+            <img src="/assets/Upcoming.svg" width="24" *ngIf="item.type === 'Goal'">
+            <div *ngIf="item.type !== 'Goal'">{{ item.type }}</div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="col-item team-name">{{ item.teamName }}</div>
+        <div class="col-item player-name">{{ item.playerName }}</div>
+    </div>
+</div>

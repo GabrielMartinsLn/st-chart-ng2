@@ -1,0 +1,54 @@
+.wrap {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    color: #555;
+
+    .col {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        height: 64px;
+        margin-right: 1rem;
+
+        .col-item {
+            margin-bottom: 0.25rem;
+            height: 33px;
+            display: flex;
+            align-items: center;
+
+            .item-badge {
+                background: #5ed56d;
+                color: #fff;
+                font-weight: bolder;
+                padding: 0.2rem 0.5rem;
+                border-radius: 0.5rem;
+            }
+        }
+
+        &:nth-child(1) {
+            align-items: flex-end;
+        }
+        &:last-child {
+            align-items: flex-start;
+        }
+    }
+
+    .point-ind-wrap {
+        border: solid 2px #0ea1e8;
+        // padding: 4px;
+        border-radius: 50%;
+
+        .point-ind {
+            // background: #0ea1e8;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+    }
+
+    .team-name {
+        font-weight: bold;
+    }
+}

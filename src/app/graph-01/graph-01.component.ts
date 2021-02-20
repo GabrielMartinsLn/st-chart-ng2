@@ -128,4 +128,8 @@ export class Graph01Component implements OnInit {
         }
     }
 
+    get finalScore() {
+        return this.service.finalScore && this.service.finalScore.split(':').join('-');
+    }
+
 }

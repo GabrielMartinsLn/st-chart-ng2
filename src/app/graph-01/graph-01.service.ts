@@ -84,6 +84,7 @@ export class Graph01Service {
                 data: values
             },
         ];
+        this.select(0);
     }
 
     private getPrice(date: string | Date) {
@@ -107,6 +108,10 @@ export class Graph01Service {
         console.log({ item });
     }
 
+    get finalScore() {
+        return Array.isArray(this.incidentsData) && this.incidentsData.length ?
+            this.incidentsData[this.incidentsData.length - 1].score : null;
+    }
 
 
 }

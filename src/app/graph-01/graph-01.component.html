@@ -1,11 +1,6 @@
 <div class="graph-wrap" *ngIf="ready">
     <div class="select-point">
-        <div>
-            14/06/2020
-        </div>
-        <div>
-            <pre>{{ selected | json }}</pre>
-        </div>
+        <app-selected-item [item]="selected" [finalScore]="finalScore"></app-selected-item>
     </div>
     <canvas baseChart width="400" height="256"
       [datasets]="lineChartData"
