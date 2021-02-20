@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { ChartOptions } from 'chart.js';
-import { Color, Label } from 'ng2-charts';
+import { Color } from 'ng2-charts';
 
 import { Graph01Service } from './graph-01.service';
 
@@ -33,10 +33,12 @@ export class Graph01Component implements OnInit {
         responsive: true,
         elements: {
             point: {
-                radius: 0
+                radius: 6
             },
             line: {
-                stepped: true,
+                // stepped: true,
+                // capBezierPoints: true,
+                tension: 0,
                 borderWidth: 1
             }
         },
@@ -47,9 +49,11 @@ export class Graph01Component implements OnInit {
                     ticks: {
                         autoSkipPadding: 100,
                         maxRotation: 0,
+                        beginAtZero: false,
                         callback(value: string) {
-                            const timeParts = value.split(' ')[1].split(':');
-                            return `${timeParts[0]}:${timeParts[1]}`;
+                            return value;
+                            // const timeParts = value.split(' ')[1].split(':');
+                            // return `${timeParts[0]}:${timeParts[1]}`;
                         }
                     }
                 }
@@ -58,6 +62,9 @@ export class Graph01Component implements OnInit {
                 {
                     id: 'y',
                     ticks: {
+                        // beginAtZero: true,
+                        stepSize: 50,
+                        suggestedMin: 400,
                         callback: (value: number) => {
                             return `\u20AC${(value / 100).toFixed(2)}`;
                         }

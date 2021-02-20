@@ -4,10 +4,17 @@
     max-width: 100%;
     overflow: hidden;
 
+    
+    margin: 1rem auto;
+}
+
+.graph-wrap {
     box-shadow: 0px 0px 2px 0px #ccc;
     background: #fff;
-
-    margin: 1rem auto;
+    border-radius: .3rem;
+    overflow: hidden;
+    padding-left: .5rem;
+    padding-bottom: .5rem;
 }
 
 .x-selectors {
@@ -18,14 +25,18 @@
         flex: 1 1 auto;
         margin: 0.5rem;
 
-        background-color: #0ea1e8;
+        background-color: #fff;
         border: none;
-        color: #fff;
+        color: #0ea1e8;
         font-weight: bolder;
         font-size: 18px;
         padding: 0.3rem;
         border-radius: 1rem;
 
+        &.active {
+            background-color: #0ea1e8;
+            color: #fff;
+        }
         &:disabled {
             background: none;
             color: rgba(#333, 0.6);

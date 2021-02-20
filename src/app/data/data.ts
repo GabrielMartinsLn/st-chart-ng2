@@ -60,7 +60,7 @@ export const INCIDENTS = [
     {
         clockTime: "95:01",
         date: "2021-02-14 18:23:20",
-        type: "Red card",
+        type: "Yellow card",
         teamName: "Leeds United",
         playerName: "Stuart Dallas",
         score: "4:2"

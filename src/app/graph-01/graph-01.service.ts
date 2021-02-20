@@ -11,6 +11,18 @@ export interface PriceItem {
     $$moment?: moment.Moment;
 }
 
+export interface IncidentItem {
+    clockTime: string;
+    date: string;
+    type: string;
+    teamName: string;
+    playerName: string;
+    score: string;
+    price?: number;
+    dayTimeMs?: number;
+    $$moment?: moment.Moment;
+}
+
 export type GraphPeriod = 'month' | 'all';
 
 @Injectable()
@@ -18,48 +30,47 @@ export class Graph01Service {
     public lineChartData: ChartDataSets[];
     public lineChartLabels: Label[];
 
-    private period: GraphPeriod = 'month';
-    private allData: PriceItem[];
-    private visibleData: PriceItem[];
+    private pricesData: PriceItem[];
+    private incidentsData: IncidentItem[];
+    private visibleData: IncidentItem[];
 
     constructor(private dataService: DataService) { }
 
-    async getData(xSelector: GraphPeriod = 'all') {
-        this.allData = await this.dataService.getPrices();
+    async getData() {
+        this.pricesData = await this.dataService.getPrices();
+        this.incidentsData = await this.dataService.getIncidents();
         this.onData();
     }
 
     onData() {
-        this.parseData();
-        this.filter();
-        this.onPrices(this.visibleData);
+        this.parseDates(this.pricesData);
+        this.parseDates(this.incidentsData);
+        this.merge();
+        this.on();
     }
 
-    parseData() {
-        for (const i of this.allData) {
+    parseDates(arr: any) {
+        for (const i of arr) {
+            i.dayTimeMs = +moment(i.date).toDate();
             i.$$moment = moment(i.date);
         }
     }
 
-    filter() {
-        const now = moment();
-        if (this.period === 'month') {
-            this.visibleData = this.allData.filter(i => i && i.date && i.$$moment.isSame(now, 'month'));
-        } else {
-            this.visibleData = this.allData;
+    merge() {
+        for (const i of this.incidentsData) {
+            i.price = this.getPrice(i.date);
         }
+        console.log(this.incidentsData);
     }
 
-    onPrices(res: PriceItem[]) {
-        if (!Array.isArray(res) || !res.length) {
-            this.makeData([], []);
-            return;
-        }
-        const labels = res.map(point => point.date);
-        const data = res.map(point => point.price);
+    on() {
+        // if (!Array.isArray(this.visibleData) || !this.visibleData.length) {
+        //     this.makeData([], []);
+        //     return;
+        // }
+        const labels = this.incidentsData.map(i => i.dayTimeMs);
+        const data = this.incidentsData.map(i => i.price);
         this.makeData(labels, data);
-        // this.makeData(labels, [10, 11, 12, 13, 25]);
-        // this.makeData(labels, [65, 59, 80, 81, 56, 55, 40]);
     }
 
     makeData(labels, values) {
@@ -71,6 +82,21 @@ export class Graph01Service {
                 data: values
             },
         ];
+    }
+
+    private getPrice(date: string | Date) {
+        const t = moment(date);
+        let last: PriceItem;
+        for (const p of this.pricesData) {
+            if (!last) {
+                last = p;
+                continue;
+            }
+            if (p.$$moment.isAfter(last.$$moment) && p.$$moment.isSameOrAfter(t)) {
+                last = p;
+            }
+        }
+        return last.price;
     }
 
 
