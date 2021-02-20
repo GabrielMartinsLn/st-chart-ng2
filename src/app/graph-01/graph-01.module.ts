@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { ChartsModule } from 'ng2-charts';
 
@@ -17,6 +17,7 @@ const routes: Routes = [{
         ChartsModule,
         RouterModule.forChild(routes)
     ],
-    declarations: [Graph01Component, SelectedItemComponent]
+    declarations: [Graph01Component, SelectedItemComponent],
+    providers: [CurrencyPipe]
 })
 export class Graph01Module { }

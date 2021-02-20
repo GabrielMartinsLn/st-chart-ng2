@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-
-import { ChartOptions, ChartTooltipCallback } from 'chart.js';
+import { CurrencyPipe } from '@angular/common';
+import { ChartOptions } from 'chart.js';
 import { Color } from 'ng2-charts';
+import * as pluginAnnotations from 'chartjs-plugin-annotation';
 
 import { Graph01Service } from './graph-01.service';
 
@@ -14,19 +15,10 @@ export class Graph01Component implements OnInit {
     public get selected() { return this.service.selected; }
     public get lineChartData() { return this.service.lineChartData; }
     public get lineChartLabels() { return this.service.lineChartLabels; }
-    // public lineChartOptions: (ChartOptions | { annotation: any }) = {
-    //     responsive: true,
-    // };
-    // public lineChartColors: Color[] = [
-    //     {
-    //         borderColor: 'black',
-    //         backgroundColor: 'rgba(255,0,0,0.3)',
-    //     },
-    // ];
     public lineChartLegend = false;
     public lineChartType = 'line';
 
-    public lineChartPlugins = [];
+    public lineChartPlugins = [pluginAnnotations];
 
     public ready: boolean;
 
@@ -38,8 +30,6 @@ export class Graph01Component implements OnInit {
                 backgroundColor: 'rgba(255, 255, 232, 1)',
             },
             line: {
-                // stepped: true,
-                // capBezierPoints: true,
                 tension: 0,
                 borderWidth: 1
             },
@@ -53,7 +43,7 @@ export class Graph01Component implements OnInit {
                     },
                     ticks: {
                         maxTicksLimit: 3,
-                        callback: (value: string, index: number) =>{
+                        callback: (value: string, index: number) => {
                             return this.service.getClockTime(index);
                         },
                     },
@@ -79,20 +69,17 @@ export class Graph01Component implements OnInit {
                     type: 'line',
                     scaleID: 'y',
                     mode: 'horizontal',
-                    value: 430,
-                    borderColor: 'red',
-                    borderWidth: 2,
+                    value: 420,
+                    borderColor: '#0ea1e8',
+                    borderWidth: 1,
                     label: {
+                        backgroundColor: '#0ea1e8',
+                        fontColor: '#fff',
+                        fontSize: 16,
                         enabled: true,
-                        content: 'hello',
-                        fontColor: 'orange'
+                        content: 'oi',
+                        position: 'right',
                     }
-                },
-                {
-                    type: 'point',
-                    yValue: 500,
-                    display: true,
-                    radius: 20
                 }
             ]
         },
@@ -109,7 +96,10 @@ export class Graph01Component implements OnInit {
         }
     ];
 
-    constructor(private service: Graph01Service) { }
+    constructor(
+        private service: Graph01Service,
+        private currency: CurrencyPipe
+    ) { }
 
     ngOnInit() {
         this.getData();
@@ -117,6 +107,49 @@ export class Graph01Component implements OnInit {
 
     async getData() {
         await this.service.getData();
+        this.lineChartOptions.annotation = {
+            annotations: [
+                {
+                    display: true,
+                    type: 'line',
+                    scaleID: 'y',
+                    mode: 'horizontal',
+                    value: this.service.initPrice,
+                    borderColor: '#5ed56d',
+                    borderWidth: 1,
+                    label: {
+                        backgroundColor: '#5ed56d3f',
+                        drawTime: 'afterDatasetsDraw',
+                        fontColor: '#fff',
+                        fontSize: 16,
+                        // xAdjust: -20,
+                        enabled: true,
+                        content: this.currency.transform(this.service.initPrice / 100, 'EUR'),
+                        position: 'right',
+                    }
+                },
+                {
+                    display: true,
+                    type: 'line',
+                    scaleID: 'y',
+                    mode: 'horizontal',
+                    value: this.service.finalPrice,
+                    borderColor: '#0ea1e8',
+                    borderWidth: 1,
+                    label: {
+                        backgroundColor: '#0ea1e83f',
+                        drawTime: 'afterDatasetsDraw',
+                        fontColor: '#fff',
+                        fontSize: 16,
+                        enabled: true,
+
+                        content: this.currency.transform(this.service.finalPrice / 100, 'EUR'),
+                        position: 'right',
+                    }
+                },
+            ]
+        };
+        console.log(this.service.finalPrice);
         this.ready = true;
     }
 

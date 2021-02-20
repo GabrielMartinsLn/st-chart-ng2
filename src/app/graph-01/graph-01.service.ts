@@ -143,5 +143,12 @@ export class Graph01Service {
             this.incidentsData[this.incidentsData.length - 1].score : null;
     }
 
+    get initPrice() {
+        return this.pricesData[0] && this.pricesData[0]?.price;
+    }
+
+    get finalPrice() {
+        return this.pricesData?.length && this.pricesData[this.pricesData.length - 1]?.price;
+    }
 
 }
