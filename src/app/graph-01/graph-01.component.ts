@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { ChartOptions } from 'chart.js';
+import { ChartOptions, ChartTooltipCallback } from 'chart.js';
 import { Color } from 'ng2-charts';
 
 import { Graph01Service } from './graph-01.service';
@@ -11,6 +11,7 @@ import { Graph01Service } from './graph-01.service';
     providers: [Graph01Service]
 })
 export class Graph01Component implements OnInit {
+    public get selected() { return this.service.selected; }
     public get lineChartData() { return this.service.lineChartData; }
     public get lineChartLabels() { return this.service.lineChartLabels; }
     // public lineChartOptions: (ChartOptions | { annotation: any }) = {
@@ -22,7 +23,7 @@ export class Graph01Component implements OnInit {
     //         backgroundColor: 'rgba(255,0,0,0.3)',
     //     },
     // ];
-    public lineChartLegend = true;
+    public lineChartLegend = false;
     public lineChartType = 'line';
 
     public lineChartPlugins = [];
@@ -33,14 +34,15 @@ export class Graph01Component implements OnInit {
         responsive: true,
         elements: {
             point: {
-                radius: 6
+                radius: 6,
+                backgroundColor: 'rgba(255, 255, 232, 1)',
             },
             line: {
                 // stepped: true,
                 // capBezierPoints: true,
                 tension: 0,
                 borderWidth: 1
-            }
+            },
         },
         scales: {
             xAxes: [
@@ -48,13 +50,13 @@ export class Graph01Component implements OnInit {
                     id: 'x',
                     ticks: {
                         autoSkipPadding: 100,
-                        maxRotation: 0,
-                        beginAtZero: false,
+                        // maxRotation: 0,
+                        beginAtZero: true,
                         callback(value: string) {
                             return value;
                             // const timeParts = value.split(' ')[1].split(':');
                             // return `${timeParts[0]}:${timeParts[1]}`;
-                        }
+                        },
                     }
                 }
             ],
@@ -95,7 +97,12 @@ export class Graph01Component implements OnInit {
                     radius: 20
                 }
             ]
-        }
+        },
+        events: ['click'],
+        tooltips: {
+            enabled: false
+        },
+        onClick: (...args) => this.onClick(args[1]),
     };
     public lineChartColors: Color[] = [
         {
@@ -113,6 +120,12 @@ export class Graph01Component implements OnInit {
     async getData() {
         await this.service.getData();
         this.ready = true;
+    }
+
+    onClick(item) {
+        if (item.length) {
+            this.service.select(item[0]._index);
+        }
     }
 
 }

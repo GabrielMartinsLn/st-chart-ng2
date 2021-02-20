@@ -1,4 +1,12 @@
 <div class="graph-wrap" *ngIf="ready">
+    <div class="select-point">
+        <div>
+            14/06/2020
+        </div>
+        <div>
+            <pre>{{ selected | json }}</pre>
+        </div>
+    </div>
     <canvas baseChart width="400" height="256"
       [datasets]="lineChartData"
       [labels]="lineChartLabels"
@@ -6,7 +14,8 @@
       [colors]="lineChartColors"
       [legend]="lineChartLegend"
       [chartType]="lineChartType"
-      [plugins]="lineChartPlugins">
+      [plugins]="lineChartPlugins"
+    >
     </canvas>
 </div>
   

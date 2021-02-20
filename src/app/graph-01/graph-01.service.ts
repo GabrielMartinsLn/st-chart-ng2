@@ -30,6 +30,8 @@ export class Graph01Service {
     public lineChartData: ChartDataSets[];
     public lineChartLabels: Label[];
 
+    public selected: IncidentItem;
+
     private pricesData: PriceItem[];
     private incidentsData: IncidentItem[];
     private visibleData: IncidentItem[];
@@ -97,6 +99,12 @@ export class Graph01Service {
             }
         }
         return last.price;
+    }
+
+    select(index) {
+        const item = this.incidentsData[index];
+        this.selected = item;
+        console.log({ item });
     }
 
 
