@@ -25,4 +25,12 @@ export class SelectedItemComponent implements OnInit {
     return this.item?.score?.split(':').join('-');
   }
 
+  get cardColor() {
+    switch (this.item.type) {
+      case 'Red card': return 'red-card';
+      case 'Yellow card': return 'yellow-card';
+      default: return null;
+    }
+  }
+
 }

@@ -9,6 +9,7 @@ export interface PriceItem {
     date: string;
     price: number;
     $$moment?: moment.Moment;
+    dayTimeMs?: number;
 }
 
 export interface IncidentItem {
@@ -59,19 +60,43 @@ export class Graph01Service {
     }
 
     merge() {
+        const firstPrice = this.pricesData[0];
+        const lastPrice = this.pricesData[this.pricesData.length - 1];
+        const lastIncident = this.incidentsData[this.incidentsData.length - 1];
+        const arr: IncidentItem[] = [];
+        arr.push({
+            date: firstPrice.date,
+            price: firstPrice.price,
+            $$moment: firstPrice.$$moment,
+            dayTimeMs: firstPrice.dayTimeMs,
+            clockTime: '00:00',
+            playerName: '',
+            teamName: '',
+            type: 'begin',
+            score: '0:0',
+        });
         for (const i of this.incidentsData) {
             i.price = this.getPrice(i.date);
+            arr.push(i);
         }
-        console.log(this.incidentsData);
+        arr.push({
+            date: lastPrice.date,
+            price: lastPrice.price,
+            $$moment: lastPrice.$$moment,
+            dayTimeMs: lastPrice.dayTimeMs,
+            clockTime: '98:00',
+            playerName: '',
+            teamName: '',
+            type: 'end',
+            score: lastIncident.score,
+        });
+        this.visibleData = arr;
+        console.log(arr);
     }
 
     on() {
-        // if (!Array.isArray(this.visibleData) || !this.visibleData.length) {
-        //     this.makeData([], []);
-        //     return;
-        // }
-        const labels = this.incidentsData.map(i => i.dayTimeMs);
-        const data = this.incidentsData.map(i => i.price);
+        const labels = this.visibleData.map(i => i.dayTimeMs);
+        const data = this.visibleData.map(i => i.price);
         this.makeData(labels, data);
     }
 
@@ -95,7 +120,7 @@ export class Graph01Service {
                 last = p;
                 continue;
             }
-            if (p.$$moment.isAfter(last.$$moment) && p.$$moment.isSameOrAfter(t)) {
+            if (p.$$moment.isAfter(last.$$moment) && p.$$moment.isSameOrBefore(t)) {
                 last = p;
             }
         }
@@ -103,9 +128,14 @@ export class Graph01Service {
     }
 
     select(index) {
-        const item = this.incidentsData[index];
+        const item = this.visibleData[index];
         this.selected = item;
         console.log({ item });
+    }
+
+    getClockTime(index) {
+        const item = this.visibleData[index];
+        return item.clockTime;
     }
 
     get finalScore() {

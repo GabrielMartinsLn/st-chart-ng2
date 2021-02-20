@@ -48,24 +48,22 @@ export class Graph01Component implements OnInit {
             xAxes: [
                 {
                     id: 'x',
+                    gridLines: {
+                        display: false
+                    },
                     ticks: {
-                        autoSkipPadding: 100,
-                        // maxRotation: 0,
-                        beginAtZero: true,
-                        callback(value: string) {
-                            return value;
-                            // const timeParts = value.split(' ')[1].split(':');
-                            // return `${timeParts[0]}:${timeParts[1]}`;
+                        maxTicksLimit: 3,
+                        callback: (value: string, index: number) =>{
+                            return this.service.getClockTime(index);
                         },
-                    }
+                    },
                 }
             ],
             yAxes: [
                 {
                     id: 'y',
+                    position: 'right',
                     ticks: {
-                        // beginAtZero: true,
-                        stepSize: 50,
                         suggestedMin: 400,
                         callback: (value: number) => {
                             return `\u20AC${(value / 100).toFixed(2)}`;
