@@ -95,22 +95,22 @@ export class Graph01Service {
     }
 
     on() {
-        const labels = this.visibleData.map(i => i.dayTimeMs);
-        const data = this.visibleData.map(i => i.price);
-        this.makeData(labels, data);
+        const labels = this.pricesData.map(i => i.dayTimeMs);
+        const data = this.pricesData.map(i => i.price);
+        const data2 = this.visibleData.map(i => i.price);
+        this.makeData(labels, data, data2);
     }
 
-    makeData(labels, values) {
+    makeData(labels, prices, incidents) {
         this.lineChartLabels = labels;
         this.lineChartData = [
             {
                 label: 'Arsenal',
-                data: values
+                data: prices
             },
         ];
-        const lastIndex = values?.length - 2;
-        const index = Math.round(Math.random() * (lastIndex - 1));
-        this.select(index);
+        const lastIndex = incidents?.length - 2;
+        this.select(lastIndex);
     }
 
     private getPrice(date: string | Date) {

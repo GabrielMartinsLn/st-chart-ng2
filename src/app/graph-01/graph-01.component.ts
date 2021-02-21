@@ -34,7 +34,7 @@ export class Graph01Component implements OnInit {
         },
         elements: {
             point: {
-                radius: 6,
+                radius: 0,
                 backgroundColor: 'rgba(255, 255, 232, 1)',
             },
             line: {
@@ -76,6 +76,7 @@ export class Graph01Component implements OnInit {
         },
         onClick: (...args) => this.onClick(args[1]),
     };
+
     public lineChartColors: Color[] = [
         {
             borderColor: 'rgba(14,161,232,1)',
