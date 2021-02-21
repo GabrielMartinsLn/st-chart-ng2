@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { ChartOptions } from 'chart.js';
 import { Color } from 'ng2-charts';
+import * as moment from 'moment';
 
 import { Graph01Service } from './graph-01.service';
 import { graph01Plugin } from './graph-01.pugin';
@@ -50,7 +51,7 @@ export class Graph01Component implements OnInit {
                     ticks: {
                         maxTicksLimit: 3,
                         callback: (value: string, index: number) => {
-                            return this.service.getClockTime(index);
+                            return moment(value).format('HH:mm');
                         },
                     },
                 }
