@@ -9,7 +9,6 @@
 
 .select-point {
     color: rgba(#000, .7);
-    padding: 1rem;
 }
 
 .graph-wrap {
@@ -18,6 +17,25 @@
     border-radius: .3rem;
     overflow: hidden;
     padding: 1rem .25rem;
+}
+
+.graph-top {
+    display: flex;
+    align-items: flex-start;
+
+    .graph-switch-button {
+        border: none;
+        outline: none;
+        background: none;
+        padding: 1rem;
+
+        &.switch-right {
+            margin-left: auto;
+        }
+        &:focus {
+            box-shadow: 0 0 2px 0 rgba(#000, .3);
+        }
+    }
 }
 
 .x-selectors {

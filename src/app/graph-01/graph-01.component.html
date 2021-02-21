@@ -1,6 +1,17 @@
 <div class="graph-wrap" *ngIf="ready">
-    <div class="select-point">
-        <app-selected-item [item]="selected" [finalScore]="finalScore"></app-selected-item>
+    <div class="graph-top">
+        
+        <button class="graph-switch-button switch-left">
+            <i class="fa fa-chevron-left"></i>
+        </button>
+
+        <div class="select-point">
+            <app-selected-item [item]="selected" [finalScore]="finalScore"></app-selected-item>
+        </div>
+
+        <button class="graph-switch-button switch-right">
+            <i class="fa fa-chevron-right"></i>
+        </button>
     </div>
     <canvas baseChart width="400" height="256"
       [datasets]="lineChartData"
