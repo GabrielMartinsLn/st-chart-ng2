@@ -25,13 +25,13 @@ export const graph01Plugin = {
             return;
         }
 
-        const max = d3.max(data);
+        const last = +data[data?.length - 1];
         const scale = d3.scaleLinear()
-            .domain([d3.min(ticks), d3.max(ticks)])
+            .domain([+d3.min(ticks), +d3.max(ticks)])
             .range([yAxis.bottom, yAxis.top]);
 
         x = xAxis.right + marginX;
-        y = scale(max) - h / 2;
+        y = scale(last) - h / 2;
 
         ctx.save();
 
