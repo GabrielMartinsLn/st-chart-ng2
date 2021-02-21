@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { ChartOptions } from 'chart.js';
 import { Color } from 'ng2-charts';

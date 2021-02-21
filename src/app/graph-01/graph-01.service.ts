@@ -40,7 +40,7 @@ export class Graph01Service {
     constructor(private dataService: DataService) { }
 
     async getData() {
-        this.pricesData = await this.dataService.getPricesRandom();
+        this.pricesData = await this.dataService.getPrices();
         this.incidentsData = await this.dataService.getIncidents();
         this.onData();
     }
