@@ -1,11 +1,12 @@
 import { BrowserModule, HammerModule, HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { Injectable, NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 declare var Hammer: any;
 
+@Injectable()
 export class MyHammerConfig extends HammerGestureConfig {
   buildHammer(element: HTMLElement) {
     const mc = new Hammer(element, {
@@ -33,4 +34,3 @@ export class MyHammerConfig extends HammerGestureConfig {
   bootstrap: [AppComponent]
 })
 export class AppModule { }
-

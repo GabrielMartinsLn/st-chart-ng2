@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { ChartOptions } from 'chart.js';
 import { Color } from 'ng2-charts';
@@ -86,7 +86,8 @@ export class Graph01Component implements OnInit {
 
     constructor(
         private service: Graph01Service,
-        private currency: CurrencyPipe
+        private currency: CurrencyPipe,
+        private cdr: ChangeDetectorRef
     ) { }
 
     ngOnInit() {
@@ -94,9 +95,12 @@ export class Graph01Component implements OnInit {
     }
 
     async getData() {
+        console.log('get data');
         await this.service.getData();
         this.setIncreasesText();
         this.ready = true;
+        this.cdr.detectChanges();
+        console.log('got data');
     }
 
     setIncreasesText() {

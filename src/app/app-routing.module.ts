@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: 'graph-01',
+    path: '',
     loadChildren: () => import('./graph-01/graph-01.module').then(m => m.Graph01Module)
   }
 ];
