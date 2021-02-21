@@ -1,7 +1,7 @@
-<div class="graph-wrap" *ngIf="ready" (swipe)="getData()">
+<div class="graph-wrap" *ngIf="ready" (swipe)="onSwipe($event)">
     <div class="graph-top">
 
-        <button class="graph-switch-button switch-left" (click)="getData()">
+        <button class="graph-switch-button switch-left" (click)="prevIndex()">
             <i class="fa fa-chevron-left"></i>
         </button>
 
@@ -9,7 +9,7 @@
             <app-selected-item [item]="selected" [finalScore]="finalScore"></app-selected-item>
         </div>
 
-        <button class="graph-switch-button switch-right" (click)="getData()">
+        <button class="graph-switch-button switch-right" (click)="nextIndex()">
             <i class="fa fa-chevron-right"></i>
         </button>
     </div>

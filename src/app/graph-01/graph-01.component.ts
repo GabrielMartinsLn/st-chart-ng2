@@ -23,6 +23,7 @@ export class Graph01Component implements OnInit {
     public lineChartPlugins = [graph01Plugin];
 
     public ready: boolean;
+    public index: number;
 
     public lineChartOptions: ChartOptions & { graph01?: any } = {
         responsive: true,
@@ -95,12 +96,10 @@ export class Graph01Component implements OnInit {
     }
 
     async getData() {
-        console.log('get data');
-        await this.service.getData();
+        await this.service.getData(this.index);
         this.setIncreasesText();
         this.ready = true;
         this.cdr.detectChanges();
-        console.log('got data');
     }
 
     setIncreasesText() {
@@ -114,6 +113,27 @@ export class Graph01Component implements OnInit {
         if (item.length && item[1]) {
             this.service.select(item[1]._index);
         }
+    }
+
+    onSwipe(e) {
+        if (e.deltaX > 0) {
+            this.prevIndex();
+        } else {
+            this.nextIndex();
+        }
+    }
+
+    nextIndex() {
+        this.index = (this.index % 3 + 1) || 1;
+        this.getData();
+    }
+
+    prevIndex() {
+        this.index = this.index - 1;
+        if (this.index < 1) {
+            this.index = 3;
+        }
+        this.getData();
     }
 
     get finalScore() {

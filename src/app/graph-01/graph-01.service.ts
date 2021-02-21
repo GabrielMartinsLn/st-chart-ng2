@@ -40,9 +40,9 @@ export class Graph01Service {
 
     constructor(private dataService: DataService) { }
 
-    async getData() {
-        this.pricesData = await this.dataService.getPrices();
-        this.incidentsData = await this.dataService.getIncidents();
+    async getData(index?: number) {
+        this.pricesData = await this.dataService.getPrices(index);
+        this.incidentsData = await this.dataService.getIncidents(index);
         this.onData();
     }
 
