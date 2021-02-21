@@ -40,7 +40,8 @@ export class Graph01Component implements OnInit {
             },
             line: {
                 tension: 0,
-                borderWidth: 1
+                borderWidth: 1,
+                stepped: true
             },
         },
         scales: {
