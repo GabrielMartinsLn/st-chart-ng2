@@ -6,10 +6,10 @@
         <div class="col">
             <div class="item-badge">{{ finalScore }}</div>
         </div>
-        <div class="col">
-            <div><img src="/assets/WOLFSBERGER AC.svg" width="24"></div>
+        <div class="col" *ngIf="!isBeginOrEnd">
+            <img src="/assets/WOLFSBERGER AC.svg" width="24">
         </div>
-        <div class="col">
+        <div class="col" *ngIf="!isBeginOrEnd">
             <div class=" team-name">{{ item.teamName }}</div>
         </div>
     </div>
@@ -25,8 +25,9 @@
             <img src="/assets/Upcoming.svg" width="24" *ngIf="item.type === 'Goal'">
             <div *ngIf="cardColor" class="card-icon" [ngClass]="cardColor"></div>
         </div>
-        <div class="col">
+        <div class="col" *ngIf="!isBeginOrEnd">
             <div class="player-name">{{ item.playerName }}</div>
         </div>
     </div>
+
 </div>

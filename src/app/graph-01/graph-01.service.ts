@@ -101,7 +101,6 @@ export class Graph01Service {
     }
 
     makeData(labels, values) {
-        // console.log({ labels });
         this.lineChartLabels = labels;
         this.lineChartData = [
             {
@@ -109,7 +108,8 @@ export class Graph01Service {
                 data: values
             },
         ];
-        this.select(0);
+        const lastIndex = values?.length - 2;
+        this.select(lastIndex);
     }
 
     private getPrice(date: string | Date) {
@@ -130,7 +130,6 @@ export class Graph01Service {
     select(index) {
         const item = this.visibleData[index];
         this.selected = item;
-        console.log({ item });
     }
 
     getClockTime(index) {
@@ -149,6 +148,10 @@ export class Graph01Service {
 
     get finalPrice() {
         return this.pricesData?.length && this.pricesData[this.pricesData.length - 1]?.price;
+    }
+
+    get periodIncrease() {
+        return (100 * this.finalPrice) / this.initPrice - 100;
     }
 
 }

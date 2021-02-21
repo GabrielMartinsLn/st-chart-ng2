@@ -33,4 +33,8 @@ export class SelectedItemComponent implements OnInit {
     }
   }
 
+  get isBeginOrEnd() {
+    return this.item?.type && ['begin', 'end'].indexOf(this.item.type) > -1;
+  }
+
 }

@@ -94,7 +94,7 @@ export class Graph01Component implements OnInit {
         await this.service.getData();
         this.lineChartOptions.graph01 = {
             text1: () => this.currency.transform(this.service.finalPrice / 100, 'EUR'),
-            text2: () => this.currency.transform(this.service.initPrice / 100, 'EUR')
+            text2: () => `${this.service.periodIncrease.toFixed(1)}%`
         };
         this.ready = true;
     }
