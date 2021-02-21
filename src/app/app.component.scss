@@ -14,8 +14,12 @@
 
 .fake-content-bar {
     background: #fff;
-    margin-bottom: 1rem;
     padding: 1rem 1.5rem;
+    
+    width: 900px;
+    box-sizing: border-box;
+    margin: auto;
+    margin-bottom: 1rem;
 
     .fake-content-box {
         background: #f2f2f2;
