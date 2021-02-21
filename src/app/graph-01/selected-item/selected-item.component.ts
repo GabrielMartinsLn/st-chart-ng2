@@ -1,8 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { IncidentItem } from '../graph-01.service';
 
-import * as moment from 'moment';
-
 @Component({
   selector: 'app-selected-item',
   templateUrl: './selected-item.component.html',

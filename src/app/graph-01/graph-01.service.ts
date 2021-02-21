@@ -40,7 +40,7 @@ export class Graph01Service {
     constructor(private dataService: DataService) { }
 
     async getData() {
-        this.pricesData = await this.dataService.getPrices();
+        this.pricesData = await this.dataService.getPricesRandom();
         this.incidentsData = await this.dataService.getIncidents();
         this.onData();
     }
@@ -109,7 +109,8 @@ export class Graph01Service {
             },
         ];
         const lastIndex = values?.length - 2;
-        this.select(lastIndex);
+        const index = Math.round(Math.random() * (lastIndex - 1));
+        this.select(index);
     }
 
     private getPrice(date: string | Date) {

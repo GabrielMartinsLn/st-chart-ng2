@@ -1,7 +1,7 @@
 <div class="graph-wrap" *ngIf="ready">
     <div class="graph-top">
         
-        <button class="graph-switch-button switch-left">
+        <button class="graph-switch-button switch-left" (click)="getData()">
             <i class="fa fa-chevron-left"></i>
         </button>
 
@@ -9,7 +9,7 @@
             <app-selected-item [item]="selected" [finalScore]="finalScore"></app-selected-item>
         </div>
 
-        <button class="graph-switch-button switch-right">
+        <button class="graph-switch-button switch-right" (click)="getData()">
             <i class="fa fa-chevron-right"></i>
         </button>
     </div>

@@ -8,11 +8,20 @@ import { INCIDENTS, PRICES } from './data';
 export class DataService {
 
     async getIncidents() {
-        return INCIDENTS;
+        return INCIDENTS.slice(0);
     }
 
     async getPrices() {
-        return PRICES;
+        return PRICES.slice(0);
+    }
+
+    async getPricesRandom() {
+        return PRICES.map(i => {
+            return {
+                ...i,
+                price: Math.round(Math.random() * 200) + 50
+            };
+        });
     }
 
 }

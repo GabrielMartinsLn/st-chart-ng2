@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { ChartOptions } from 'chart.js';
 import { Color } from 'ng2-charts';
-import * as pluginAnnotations from 'chartjs-plugin-annotation';
 
 import { Graph01Service } from './graph-01.service';
 import { graph01Plugin } from './graph-01.pugin';
@@ -19,7 +18,7 @@ export class Graph01Component implements OnInit {
     public lineChartLegend = false;
     public lineChartType = 'line';
 
-    public lineChartPlugins = [pluginAnnotations, graph01Plugin];
+    public lineChartPlugins = [graph01Plugin];
 
     public ready: boolean;
 
@@ -27,6 +26,7 @@ export class Graph01Component implements OnInit {
         responsive: true,
         layout: {
             padding: {
+                top: 8,
                 right: 48,
             }
         },
@@ -92,11 +92,15 @@ export class Graph01Component implements OnInit {
 
     async getData() {
         await this.service.getData();
+        this.setIncreasesText();
+        this.ready = true;
+    }
+
+    setIncreasesText() {
         this.lineChartOptions.graph01 = {
             text1: () => this.currency.transform(this.service.finalPrice / 100, 'EUR'),
             text2: () => `${this.service.periodIncrease.toFixed(1)}%`
         };
-        this.ready = true;
     }
 
     onClick(item) {
