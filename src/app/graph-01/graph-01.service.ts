@@ -22,6 +22,8 @@ export interface IncidentItem {
     price?: number;
     dayTimeMs?: number;
     $$moment?: moment.Moment;
+    lastDate?: number;
+    lastPrice?: number;
 }
 
 export type GraphPeriod = 'month' | 'all';
@@ -76,7 +78,7 @@ export class Graph01Service {
             score: '0:0',
         });
         for (const i of this.incidentsData) {
-            i.price = this.getPrice(i.date);
+            Object.assign(i, this.findNearestPricePoint(i.date));
             arr.push(i);
         }
         arr.push({
@@ -102,18 +104,31 @@ export class Graph01Service {
     }
 
     makeData(labels, prices, incidents) {
-        this.lineChartLabels = labels;
+        this.lineChartLabels = this.pricesData.map(i => i.dayTimeMs as any);
         this.lineChartData = [
             {
+                order: 1,
                 label: 'Arsenal',
-                data: prices
+                data: this.pricesData.map(i => i.price)
             },
+            {
+                order: 2,
+                label: 'incidents',
+                data: this.visibleData.map(i => ({
+                    x: i.lastDate,
+                    y: i.lastPrice,
+                })),
+                fill: false,
+                radius: 7,
+                showLine: false
+
+            }
         ];
         const lastIndex = incidents?.length - 2;
         this.select(lastIndex);
     }
 
-    private getPrice(date: string | Date) {
+    private findNearestPricePoint(date: string | Date) {
         const t = moment(date);
         let last: PriceItem;
         for (const p of this.pricesData) {
@@ -125,7 +140,10 @@ export class Graph01Service {
                 last = p;
             }
         }
-        return last.price;
+        return {
+            lastDate: last.dayTimeMs,
+            lastPrice: last.price
+        };
     }
 
     select(index) {
