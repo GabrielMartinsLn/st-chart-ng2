@@ -111,8 +111,8 @@ export class Graph01Component implements OnInit {
     }
 
     onClick(item) {
-        if (item.length) {
-            this.service.select(item[0]._index);
+        if (item.length && item[1]) {
+            this.service.select(item[1]._index);
         }
     }
 

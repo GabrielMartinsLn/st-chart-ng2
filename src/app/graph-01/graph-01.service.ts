@@ -108,20 +108,28 @@ export class Graph01Service {
         this.lineChartData = [
             {
                 order: 1,
-                label: 'Arsenal',
-                data: this.pricesData.map(i => i.price)
+                label: 'Prices',
+                data: this.pricesData.map(i => i.price),
+                radius: 0,
+                pointHoverRadius: 0,
             },
             {
                 order: 2,
-                label: 'incidents',
+                label: 'Incidents',
                 data: this.visibleData.map(i => ({
                     x: i.lastDate,
                     y: i.lastPrice,
                 })),
                 fill: false,
-                radius: 7,
-                showLine: false
-
+                showLine: false,
+                radius: 8,
+                pointHitRadius: 8,
+                pointHoverRadius: 8,
+                pointBorderColor: '#fff',
+                pointBorderWidth: 3,
+                pointHoverBackgroundColor: '#0ea1e8',
+                pointHoverBorderColor: '#0e71c8',
+                pointHoverBorderWidth: 3,
             }
         ];
         const lastIndex = incidents?.length - 2;
