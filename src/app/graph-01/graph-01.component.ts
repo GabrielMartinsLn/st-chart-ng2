@@ -5,6 +5,7 @@ import { Color } from 'ng2-charts';
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
 
 import { Graph01Service } from './graph-01.service';
+import { graph01Plugin } from './graph-01.pugin';
 
 @Component({
     templateUrl: './graph-01.component.html',
@@ -18,12 +19,17 @@ export class Graph01Component implements OnInit {
     public lineChartLegend = false;
     public lineChartType = 'line';
 
-    public lineChartPlugins = [pluginAnnotations];
+    public lineChartPlugins = [pluginAnnotations, graph01Plugin];
 
     public ready: boolean;
 
-    public lineChartOptions: ChartOptions & { annotation: any } = {
+    public lineChartOptions: ChartOptions & { graph01?: any } = {
         responsive: true,
+        layout: {
+            padding: {
+                right: 48,
+            }
+        },
         elements: {
             point: {
                 radius: 6,
@@ -62,27 +68,6 @@ export class Graph01Component implements OnInit {
                 }
             ]
         },
-        annotation: {
-            annotations: [
-                {
-                    display: true,
-                    type: 'line',
-                    scaleID: 'y',
-                    mode: 'horizontal',
-                    value: 420,
-                    borderColor: '#0ea1e8',
-                    borderWidth: 1,
-                    label: {
-                        backgroundColor: '#0ea1e8',
-                        fontColor: '#fff',
-                        fontSize: 16,
-                        enabled: true,
-                        content: 'oi',
-                        position: 'right',
-                    }
-                }
-            ]
-        },
         events: ['click'],
         tooltips: {
             enabled: false
@@ -107,49 +92,10 @@ export class Graph01Component implements OnInit {
 
     async getData() {
         await this.service.getData();
-        this.lineChartOptions.annotation = {
-            annotations: [
-                {
-                    display: true,
-                    type: 'line',
-                    scaleID: 'y',
-                    mode: 'horizontal',
-                    value: this.service.initPrice,
-                    borderColor: '#5ed56d',
-                    borderWidth: 1,
-                    label: {
-                        backgroundColor: '#5ed56d3f',
-                        drawTime: 'afterDatasetsDraw',
-                        fontColor: '#fff',
-                        fontSize: 16,
-                        // xAdjust: -20,
-                        enabled: true,
-                        content: this.currency.transform(this.service.initPrice / 100, 'EUR'),
-                        position: 'right',
-                    }
-                },
-                {
-                    display: true,
-                    type: 'line',
-                    scaleID: 'y',
-                    mode: 'horizontal',
-                    value: this.service.finalPrice,
-                    borderColor: '#0ea1e8',
-                    borderWidth: 1,
-                    label: {
-                        backgroundColor: '#0ea1e83f',
-                        drawTime: 'afterDatasetsDraw',
-                        fontColor: '#fff',
-                        fontSize: 16,
-                        enabled: true,
-
-                        content: this.currency.transform(this.service.finalPrice / 100, 'EUR'),
-                        position: 'right',
-                    }
-                },
-            ]
+        this.lineChartOptions.graph01 = {
+            text1: () => this.currency.transform(this.service.finalPrice / 100, 'EUR'),
+            text2: () => this.currency.transform(this.service.initPrice / 100, 'EUR')
         };
-        console.log(this.service.finalPrice);
         this.ready = true;
     }
 

@@ -91,7 +91,7 @@ export class Graph01Service {
             score: lastIncident.score,
         });
         this.visibleData = arr;
-        console.log(arr);
+        // console.log(arr);
     }
 
     on() {
@@ -101,7 +101,7 @@ export class Graph01Service {
     }
 
     makeData(labels, values) {
-        console.log({ labels });
+        // console.log({ labels });
         this.lineChartLabels = labels;
         this.lineChartData = [
             {
