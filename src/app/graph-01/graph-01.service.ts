@@ -37,7 +37,6 @@ export class Graph01Service {
 
     private pricesData: PriceItem[];
     private incidentsData: IncidentItem[];
-    private visibleData: IncidentItem[];
 
     constructor(private dataService: DataService) { }
 
@@ -48,62 +47,22 @@ export class Graph01Service {
     }
 
     onData() {
+        this.process();
+        this.makeData();
+    }
+
+    process() {
         this.parseDates(this.pricesData);
         this.parseDates(this.incidentsData);
-        this.merge();
-        this.on();
-    }
-
-    parseDates(arr: any) {
-        for (const i of arr) {
-            i.dayTimeMs = +moment(i.date).toDate();
-            i.$$moment = moment(i.date);
-        }
-    }
-
-    merge() {
-        const firstPrice = this.pricesData[0];
-        const lastPrice = this.pricesData[this.pricesData.length - 1];
-        const lastIncident = this.incidentsData[this.incidentsData.length - 1];
         const arr: IncidentItem[] = [];
-        arr.push({
-            date: firstPrice.date,
-            price: firstPrice.price,
-            $$moment: firstPrice.$$moment,
-            dayTimeMs: firstPrice.dayTimeMs,
-            clockTime: '00:00',
-            playerName: '',
-            teamName: '',
-            type: 'begin',
-            score: '0:0',
-        });
         for (const i of this.incidentsData) {
             Object.assign(i, this.findNearestPricePoint(i.date));
             arr.push(i);
         }
-        arr.push({
-            date: lastPrice.date,
-            price: lastPrice.price,
-            $$moment: lastPrice.$$moment,
-            dayTimeMs: lastPrice.dayTimeMs,
-            clockTime: '98:00',
-            playerName: '',
-            teamName: '',
-            type: 'end',
-            score: lastIncident.score,
-        });
-        this.visibleData = arr;
-        // console.log(arr);
+        this.incidentsData = arr;
     }
 
-    on() {
-        const labels = this.pricesData.map(i => i.dayTimeMs);
-        const data = this.pricesData.map(i => i.price);
-        const data2 = this.visibleData.map(i => i.price);
-        this.makeData(labels, data, data2);
-    }
-
-    makeData(labels, prices, incidents) {
+    makeData() {
         this.lineChartLabels = this.pricesData.map(i => i.dayTimeMs as any);
         this.lineChartData = [
             {
@@ -116,7 +75,7 @@ export class Graph01Service {
             {
                 order: 2,
                 label: 'Incidents',
-                data: this.visibleData.map(i => ({
+                data: this.incidentsData.map(i => ({
                     x: i.lastDate,
                     y: i.lastPrice,
                 })),
@@ -127,40 +86,23 @@ export class Graph01Service {
                 pointHoverRadius: 8,
                 pointBorderColor: '#fff',
                 pointBorderWidth: 3,
+                pointBackgroundColor: '#0ea1e8',
                 pointHoverBackgroundColor: '#0ea1e8',
                 pointHoverBorderColor: '#0e71c8',
                 pointHoverBorderWidth: 3,
             }
         ];
-        const lastIndex = incidents?.length - 2;
+        const lastIndex = this.incidentsData?.length - 1;
         this.select(lastIndex);
     }
 
-    private findNearestPricePoint(date: string | Date) {
-        const t = moment(date);
-        let last: PriceItem;
-        for (const p of this.pricesData) {
-            if (!last) {
-                last = p;
-                continue;
-            }
-            if (p.$$moment.isAfter(last.$$moment) && p.$$moment.isSameOrBefore(t)) {
-                last = p;
-            }
-        }
-        return {
-            lastDate: last.dayTimeMs,
-            lastPrice: last.price
-        };
-    }
-
     select(index) {
-        const item = this.visibleData[index];
+        const item = this.incidentsData[index];
         this.selected = item;
     }
 
     getClockTime(index) {
-        const item = this.visibleData[index];
+        const item = this.incidentsData[index];
         return item.clockTime;
     }
 
@@ -179,6 +121,32 @@ export class Graph01Service {
 
     get periodIncrease() {
         return (100 * this.finalPrice) / this.initPrice - 100;
+    }
+
+
+    private parseDates(arr: any) {
+        for (const i of arr) {
+            i.dayTimeMs = +moment(i.date).toDate();
+            i.$$moment = moment(i.date);
+        }
+    }
+
+    private findNearestPricePoint(date: string | Date) {
+        const t = moment(date);
+        let last: PriceItem;
+        for (const p of this.pricesData) {
+            if (!last) {
+                last = p;
+                continue;
+            }
+            if (p.$$moment.isAfter(last.$$moment) && p.$$moment.isSameOrBefore(t)) {
+                last = p;
+            }
+        }
+        return {
+            lastDate: last.dayTimeMs,
+            lastPrice: last.price
+        };
     }
 
 }
