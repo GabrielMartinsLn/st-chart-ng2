@@ -1,6 +1,6 @@
-<div class="graph-wrap" *ngIf="ready">
+<div class="graph-wrap" *ngIf="ready" (swipe)="getData()">
     <div class="graph-top">
-        
+
         <button class="graph-switch-button switch-left" (click)="getData()">
             <i class="fa fa-chevron-left"></i>
         </button>
@@ -13,19 +13,13 @@
             <i class="fa fa-chevron-right"></i>
         </button>
     </div>
-    <canvas baseChart width="400" height="256"
-      [datasets]="lineChartData"
-      [labels]="lineChartLabels"
-      [options]="lineChartOptions"
-      [colors]="lineChartColors"
-      [legend]="lineChartLegend"
-      [chartType]="lineChartType"
-      [plugins]="lineChartPlugins"
-    >
+    <canvas baseChart width="400" height="256" [datasets]="lineChartData" [labels]="lineChartLabels"
+        [options]="lineChartOptions" [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType"
+        [plugins]="lineChartPlugins">
     </canvas>
 </div>
-  
-<div class="x-selectors">
+
+<div class="x-selectors" (swipe)="onSwipe($event)">
     <button class="x-selector-btn" disabled>Live</button>
     <button class="x-selector-btn">Month</button>
     <button class="x-selector-btn active">Prev. Match</button>
