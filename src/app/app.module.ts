@@ -26,7 +26,6 @@ export class MyHammerConfig extends HammerGestureConfig {
   ],
   providers: [
     {
-      // hammer instantion with custom config
       provide: HAMMER_GESTURE_CONFIG,
       useClass: MyHammerConfig,
     }

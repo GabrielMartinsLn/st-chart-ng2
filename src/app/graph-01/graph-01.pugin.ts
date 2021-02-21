@@ -44,20 +44,17 @@ export const graph01Plugin = {
         ctx.lineTo(tX - h * .35, y + h / 2);
         ctx.closePath();
         ctx.fill();
-
         ctx.fillRect(x, y, w, h);
         if (text2) {
             ctx.fillStyle = '#5ed56d';
             ctx.fillRect(x, y + h, w, h);
         }
 
+        // Text
         ctx.font = 'bold 16px Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif';
         ctx.fillStyle = '#fff';
-
         ctx.textBaseline = 'middle';
         ctx.textAlign = 'center';
-
-        // Text
         const textX = x + w / 2;
         const textY = y + h / 2;
         ctx.fillText(text1, textX, textY);

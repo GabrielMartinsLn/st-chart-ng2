@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { ChartOptions } from 'chart.js';
 import { Color } from 'ng2-charts';
@@ -8,6 +8,7 @@ import { Graph01Service } from './graph-01.service';
 import { graph01Plugin } from './graph-01.pugin';
 
 @Component({
+    selector: 'app-graph-01',
     templateUrl: './graph-01.component.html',
     styleUrls: ['./graph-01.component.scss'],
     providers: [Graph01Service]
