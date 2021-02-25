@@ -12,6 +12,13 @@
     background: #158;
 }
 
+.content {
+    width: 900px;
+    margin: 1rem auto;
+    max-width: 100%;
+    touch-action: pan-y;
+}
+
 .fake-content-bar {
     background: #fff;
     padding: 1rem 1.5rem;
