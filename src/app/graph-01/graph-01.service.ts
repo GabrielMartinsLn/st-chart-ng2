@@ -41,17 +41,13 @@ export class Graph01Service {
     constructor(private dataService: DataService) { }
 
     async getData(index?: number) {
+        // const [prices, incidents] = Promise.all([])
         this.pricesData = await this.dataService.getPrices(index);
         this.incidentsData = await this.dataService.getIncidents(index);
         this.onData();
     }
 
-    onData() {
-        this.process();
-        this.makeData();
-    }
-
-    process() {
+    private onData() {
         this.parseDates(this.pricesData);
         this.parseDates(this.incidentsData);
         const arr: IncidentItem[] = [];
@@ -60,9 +56,7 @@ export class Graph01Service {
             arr.push(i);
         }
         this.incidentsData = arr;
-    }
 
-    makeData() {
         this.lineChartLabels = this.pricesData.map(i => i.dayTimeMs as any);
         this.lineChartData = [
             {
