@@ -125,14 +125,14 @@ export class Graph01Component implements OnInit {
     }
 
     nextIndex() {
-        this.index = (this.index % 3 + 1) || 1;
+        this.index = (this.index % 3) || 1;
         this.getData();
     }
 
     prevIndex() {
         this.index = this.index - 1;
         if (this.index < 1) {
-            this.index = 3;
+            this.index = 2;
         }
         this.getData();
     }
