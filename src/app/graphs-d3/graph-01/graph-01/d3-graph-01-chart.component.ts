@@ -54,8 +54,14 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
     }
 
     buildGraph() {
-        const width = 900;
-        const height = 500;
+        const contentWidth = 850;
+        const contentHeight = 450;
+
+        const yAxisWidth = 50;
+        const xAxisHeight = 50;
+
+        const width = contentWidth + yAxisWidth;
+        const height = contentHeight + xAxisHeight;
 
         const prices = this.prices;
         const pricesTimes = prices.map(i => (i.date));
@@ -64,11 +70,12 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
         this.svg = d3.select(this.elRef.nativeElement as any)
             .append('svg')
             .attr('viewBox', `0 0 ${width} ${height}`)
-            .attr('preserveAspectRatio', 'xMinYMin meet')
-            .style('background', '#fff');
+            .attr('preserveAspectRatio', 'xMinYMin meet');
 
-        const xScale = d3.scaleTime().range([0, width]);
-        const yScale = d3.scaleLinear().range([height, 0]);
+        this.svg.append('g').classed('graph-content', true);
+
+        const xScale = d3.scaleTime().range([0, contentWidth]);
+        const yScale = d3.scaleLinear().range([contentHeight, 0]);
 
         xScale.domain([d3.min(pricesTimes), d3.max(pricesTimes)]);
         yScale.domain([d3.min(pricesValue), d3.max(pricesValue)]).nice();
@@ -82,7 +89,8 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .y((d: any) => yScale(d.price))
             .curve(d3.curveStepBefore);
 
-        const linePath = this.svg.append('g')
+        const linePath = this.svg.select('g.graph-content')
+            .append('g')
             .classed('prices-line', true)
             .append('path')
             .datum(prices)
@@ -104,11 +112,12 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
         // Prices Area
         const area = d3.area()
             .x((d: any) => xScale(d.dateMs))
-            .y0(height)
+            .y0(contentHeight)
             .y1((d: any) => yScale(d.price))
             .curve(d3.curveStepBefore);
 
-        this.svg.append('g')
+        this.svg.select('g.graph-content')
+            .append('g')
             .classed('prices-area', true)
             .append('path')
             .datum(prices)
@@ -123,20 +132,21 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
         // Incidents
 
-        this.svg.append('g')
+        this.svg.select('g.graph-content')
+            .append('g')
             .classed('incidents', true)
             .selectAll('circle')
             .data(this.incidents)
             .enter()
             .append('circle')
-            .attr('r', 8)
+            .attr('r', 7)
             .attr('cx', (d: any) => xScale(d.lastDate) - 1)
             .attr('cy', (d: any) => yScale(d.lastPrice))
             .attr('fill', 'none')
             .transition()
             .delay(this.animDuration + 2e3)
             .attr('fill', '#0ea1e8')
-            .attr('stroke-width', 4)
+            .attr('stroke-width', 3)
             .attr('stroke', '#fff')
             ;
 
@@ -227,7 +237,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .transition()
             .delay(this.animDuration + 1.2e3)
             .attr('fill', '#0ea1e8')
-            .attr('stroke-width', 4)
+            .attr('stroke-width', 3)
             .attr('stroke', '#fff')
             ;
 
