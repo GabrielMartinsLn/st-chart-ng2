@@ -3,7 +3,7 @@ import { ChartDataSets } from 'chart.js';
 import { Label } from 'ng2-charts';
 import * as moment from 'moment';
 
-import { DataService } from '../data/data.service';
+import { DataService } from '../../data/data.service';
 
 export interface PriceItem {
     date: string;

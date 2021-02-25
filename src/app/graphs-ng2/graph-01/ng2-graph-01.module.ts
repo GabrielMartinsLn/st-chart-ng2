@@ -20,4 +20,4 @@ const routes: Routes = [{
     declarations: [Graph01Component, SelectedItemComponent],
     providers: [CurrencyPipe]
 })
-export class Graph01Module { }
+export class Ng2Graph01Module { }

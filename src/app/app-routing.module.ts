@@ -4,7 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./graph-01/graph-01.module').then(m => m.Graph01Module)
+    loadChildren: () => import('./graphs-ng2/graph-01/ng2-graph-01.module').then(m => m.Ng2Graph01Module)
   }
 ];
 
