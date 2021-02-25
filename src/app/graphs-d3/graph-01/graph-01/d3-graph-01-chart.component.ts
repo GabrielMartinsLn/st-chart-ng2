@@ -1,7 +1,6 @@
 import { Component, ElementRef, Input, OnChanges, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import * as moment from 'moment';
-
 @Component({
     selector: 'app-d3-chart',
     template: ''
@@ -71,7 +70,8 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
         const line = d3.line()
             .x((d: any) => xScale(d.dateMs))
-            .y((d: any) => yScale(d.price) + 8);
+            .y((d: any) => yScale(d.price) + 8)
+            .curve(d3.curveStepBefore);
 
         this.svg.append('g')
             .classed('prices-line', true)
@@ -104,7 +104,8 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
         const line = d3.line()
             .x((d: any) => xScale(d.dateMs))
-            .y((d: any) => yScale(d.price) + 8);
+            .y((d: any) => yScale(d.price) + 8)
+            .curve(d3.curveStepBefore);
 
         const lineGroup = this.svg.select('.prices-line');
 
