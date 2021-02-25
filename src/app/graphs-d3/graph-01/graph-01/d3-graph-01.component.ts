@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from 'src/app/data/data.service';
+import * as moment from 'moment';
 
 @Component({
     selector: 'app-d3-graph-01',
@@ -7,8 +8,10 @@ import { DataService } from 'src/app/data/data.service';
     styleUrls: ['./d3-graph-01.component.scss']
 })
 export class D3Graph01Component implements OnInit {
-    prices: any;
     private index: number;
+
+    prices: any;
+    incidents: any;
 
     constructor(
         private dataService: DataService
@@ -40,6 +43,29 @@ export class D3Graph01Component implements OnInit {
 
     async getData() {
         this.prices = await this.dataService.getPrices(this.index);
+        this.incidents = await this.dataService.getIncidents(this.index);
+        for (const i of this.incidents) {
+            Object.assign(i, this.getPriceAtMoment(i.date) || {});
+        }
+    }
+
+    getPriceAtMoment(date: string | Date) {
+        const t = moment(date);
+        let last: any;
+        for (const p of this.prices) {
+            if (!last) {
+                last = p;
+                continue;
+            }
+            const current = moment(p.date);
+            if (current.isAfter(last.date) && current.isSameOrBefore(t)) {
+                last = p;
+            }
+        }
+        return {
+            lastDate: last.date,
+            lastPrice: last.price,
+        };
     }
 
 }

@@ -13,7 +13,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
     private hasData: boolean;
     private svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
 
-    private animDuration = 15e2;
+    private animDuration = 1.2e3;
 
     constructor(private elRef: ElementRef) { }
 
@@ -43,6 +43,11 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
                 i.date = moment(i.date).toDate();
                 i.dateMs = moment(i.date).valueOf();
             }
+            for (const i of this.incidents) {
+                i.date = moment(i.date).toDate();
+                i.lastDate = moment(i.lastDate).toDate();
+                i.dateMs = moment(i.date).valueOf();
+            }
         } else {
             this.prices = [];
         }
@@ -68,11 +73,13 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
         xScale.domain([d3.min(pricesTimes), d3.max(pricesTimes)]);
         yScale.domain([d3.min(pricesValue), d3.max(pricesValue)]).nice();
 
+        // return;
+
         // Prices Line
 
         const line = d3.line()
             .x((d: any) => xScale(d.dateMs))
-            .y((d: any) => yScale(d.price) + 8)
+            .y((d: any) => yScale(d.price))
             .curve(d3.curveStepBefore);
 
         const linePath = this.svg.append('g')
@@ -98,7 +105,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
         const area = d3.area()
             .x((d: any) => xScale(d.dateMs))
             .y0(height)
-            .y1((d: any) => yScale(d.price) + 8)
+            .y1((d: any) => yScale(d.price))
             .curve(d3.curveStepBefore);
 
         this.svg.append('g')
@@ -110,8 +117,28 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('d', area)
             .attr('fill', '#0ea1e800')
             .transition()
-            .duration(1e3)
+            .duration(.8e3)
             .attr('fill', '#0ea1e80f');
+
+
+        // Incidents
+
+        this.svg.append('g')
+            .classed('incidents', true)
+            .selectAll('circle')
+            .data(this.incidents)
+            .enter()
+            .append('circle')
+            .attr('r', 8)
+            .attr('cx', (d: any) => xScale(d.lastDate) - 1)
+            .attr('cy', (d: any) => yScale(d.lastPrice))
+            .attr('fill', 'none')
+            .transition()
+            .delay(this.animDuration + 2e3)
+            .attr('fill', '#0ea1e8')
+            .attr('stroke-width', 4)
+            .attr('stroke', '#fff')
+            ;
 
         this.built = true;
     }
@@ -124,20 +151,17 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
         const pricesTimes = prices.map(i => i.dateMs);
         const pricesValue = prices.map(i => i.price);
 
-        const xScale = d3.scaleLinear()
-            .domain([d3.min(pricesTimes), d3.max(pricesTimes)])
-            .range([0, width]);
+        const xScale = d3.scaleTime().range([0, width]);
+        const yScale = d3.scaleLinear().range([height, 0]);
 
-
-        const yScale = d3.scaleLinear()
-            .domain([d3.min(pricesValue), d3.max(pricesValue)])
-            .range([height - 16, 0]);
+        xScale.domain([d3.min(pricesTimes), d3.max(pricesTimes)]);
+        yScale.domain([d3.min(pricesValue), d3.max(pricesValue)]).nice();
 
         // Line
 
         const line = d3.line()
             .x((d: any) => xScale(d.date))
-            .y((d: any) => yScale(d.price) + 8)
+            .y((d: any) => yScale(d.price))
             .curve(d3.curveStepBefore);
 
         const lineGroup = this.svg.select('.prices-line');
@@ -168,7 +192,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
         const area = d3.area()
             .x((d: any) => xScale(d.dateMs))
             .y0(height)
-            .y1((d: any) => yScale(d.price) + 8)
+            .y1((d: any) => yScale(d.price))
             .curve(d3.curveStepBefore);
 
         const areaGroup = this.svg.select('.prices-area');
@@ -182,8 +206,31 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('d', area)
             .attr('fill', '#0ea1e800')
             .transition()
-            .duration(1e3)
+            .duration(.8e3)
             .attr('fill', '#0ea1e80f');
+
+        // Incidents
+
+        const circlesGroup = this.svg.select('g.incidents');
+
+        circlesGroup.selectAll('circle').remove();
+
+        circlesGroup
+            .selectAll('circle')
+            .data(this.incidents)
+            .enter()
+            .append('circle')
+            .attr('r', 8)
+            .attr('cx', (d: any) => xScale(d.lastDate) - 1)
+            .attr('cy', (d: any) => yScale(d.lastPrice))
+            .attr('fill', 'none')
+            .transition()
+            .delay(this.animDuration + 1.2e3)
+            .attr('fill', '#0ea1e8')
+            .attr('stroke-width', 4)
+            .attr('stroke', '#fff')
+            ;
+
 
     }
 
