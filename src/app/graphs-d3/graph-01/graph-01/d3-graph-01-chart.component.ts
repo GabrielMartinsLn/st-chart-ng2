@@ -13,6 +13,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
     private hasData: boolean;
     private svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
 
+    private animDuration = 15e2;
 
     constructor(private elRef: ElementRef) { }
 
@@ -39,6 +40,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
         this.hasData = Array.isArray(this.prices) && !!this.prices.length;
         if (this.hasData) {
             for (const i of this.prices) {
+                i.date = moment(i.date).toDate();
                 i.dateMs = moment(i.date).valueOf();
             }
         } else {
@@ -51,36 +53,65 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
         const height = 500;
 
         const prices = this.prices;
-        const pricesTimes = prices.map(i => i.dateMs);
+        const pricesTimes = prices.map(i => (i.date));
         const pricesValue = prices.map(i => i.price);
 
         this.svg = d3.select(this.elRef.nativeElement as any)
             .append('svg')
-            .style('border', 'solid thin #ccc')
             .attr('viewBox', `0 0 ${width} ${height}`)
-            .attr('preserveAspectRatio', 'xMinYMin meet');
+            .attr('preserveAspectRatio', 'xMinYMin meet')
+            .style('background', '#fff');
 
-        const xScale = d3.scaleLinear()
-            .domain([d3.min(pricesTimes), d3.max(pricesTimes)])
-            .range([0, width]);
+        const xScale = d3.scaleTime().range([0, width]);
+        const yScale = d3.scaleLinear().range([height, 0]);
 
-        const yScale = d3.scaleLinear()
-            .domain([d3.min(pricesValue), d3.max(pricesValue)])
-            .range([height - 16, 0]);
+        xScale.domain([d3.min(pricesTimes), d3.max(pricesTimes)]);
+        yScale.domain([d3.min(pricesValue), d3.max(pricesValue)]).nice();
+
+        // Prices Line
 
         const line = d3.line()
             .x((d: any) => xScale(d.dateMs))
             .y((d: any) => yScale(d.price) + 8)
             .curve(d3.curveStepBefore);
 
-        this.svg.append('g')
+        const linePath = this.svg.append('g')
             .classed('prices-line', true)
             .append('path')
             .datum(prices)
             .attr('fill', 'none')
-            .attr('stroke', 'steelblue')
-            .attr('d', line as any)
-            .attr('stroke', 'black');
+            .attr('stroke-width', 2)
+            .attr('stroke', '#0ea1e8')
+            .attr('d', line);
+
+        // Line animation
+        const totalLength = linePath.node().getTotalLength();
+        linePath
+            .attr('stroke-dasharray', totalLength + ' ' + totalLength)
+            .attr('stroke-dashoffset', totalLength)
+            .transition()
+            .duration(this.animDuration)
+            .ease((d) => d)
+            .attr('stroke-dashoffset', 0);
+
+        // Prices Area
+        const area = d3.area()
+            .x((d: any) => xScale(d.dateMs))
+            .y0(height)
+            .y1((d: any) => yScale(d.price) + 8)
+            .curve(d3.curveStepBefore);
+
+        this.svg.append('g')
+            .classed('prices-area', true)
+            .append('path')
+            .datum(prices)
+            .transition()
+            .delay(this.animDuration)
+            .attr('d', area)
+            .attr('fill', '#0ea1e800')
+            .transition()
+            .duration(1e3)
+            .attr('fill', '#0ea1e80f');
 
         this.built = true;
     }
@@ -102,8 +133,10 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .domain([d3.min(pricesValue), d3.max(pricesValue)])
             .range([height - 16, 0]);
 
+        // Line
+
         const line = d3.line()
-            .x((d: any) => xScale(d.dateMs))
+            .x((d: any) => xScale(d.date))
             .y((d: any) => yScale(d.price) + 8)
             .curve(d3.curveStepBefore);
 
@@ -111,13 +144,47 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
         lineGroup.select('path').remove();
 
-        lineGroup
+        const linePath = lineGroup
             .append('path')
             .datum(prices)
             .attr('fill', 'none')
-            .attr('stroke', 'steelblue')
-            .attr('d', line as any)
-            .attr('stroke', 'black');
+            .attr('stroke-width', 2)
+            .attr('stroke', '#0ea1e8')
+            .attr('d', line as any);
+
+        // Line animation
+
+        const totalLength = linePath.node().getTotalLength();
+        linePath
+            .attr('stroke-dasharray', totalLength + ' ' + totalLength)
+            .attr('stroke-dashoffset', totalLength)
+            .transition()
+            .duration(this.animDuration)
+            .ease((d) => d)
+            .attr('stroke-dashoffset', 0);
+
+
+        // Prices Area
+        const area = d3.area()
+            .x((d: any) => xScale(d.dateMs))
+            .y0(height)
+            .y1((d: any) => yScale(d.price) + 8)
+            .curve(d3.curveStepBefore);
+
+        const areaGroup = this.svg.select('.prices-area');
+        areaGroup.select('path').remove();
+
+        areaGroup
+            .append('path')
+            .datum(prices)
+            .transition()
+            .delay(this.animDuration)
+            .attr('d', area)
+            .attr('fill', '#0ea1e800')
+            .transition()
+            .duration(1e3)
+            .attr('fill', '#0ea1e80f');
+
     }
 
 }
