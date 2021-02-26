@@ -1,9 +1,23 @@
+import { CurrencyPipe } from '@angular/common';
 import { Component, ElementRef, Input, OnChanges, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import * as moment from 'moment';
+
+const marginLeft = 10;
+const marginTop = 10;
+const contentWidth = 850;
+const contentHeight = 450;
+
+const yAxisWidth = 50;
+const xAxisHeight = 50;
+
+const width = marginLeft + contentWidth + yAxisWidth;
+const height = contentHeight + xAxisHeight;
+
 @Component({
     selector: 'app-d3-chart',
-    template: ''
+    template: '',
+    providers: [CurrencyPipe]
 })
 export class D3Graph01ChartComponent implements OnInit, OnChanges {
     @Input() incidents: any[];
@@ -15,7 +29,12 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
     private animDuration = 1.2e3;
 
-    constructor(private elRef: ElementRef) { }
+    private xAxisDates: Date[];
+
+    constructor(
+        private elRef: ElementRef,
+        private currency: CurrencyPipe
+    ) { }
 
     ngOnInit() {
         this.build();
@@ -48,21 +67,20 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
                 i.lastDate = moment(i.lastDate).toDate();
                 i.dateMs = moment(i.date).valueOf();
             }
+            const begin = moment(this.prices[0].date);
+            const end = moment(this.prices[this.prices.length - 1].date);
+            const d = end.diff(begin, 'minutes');
+            this.xAxisDates = [
+                begin.toDate(),
+                begin.clone().add(d / 2, 'minutes').toDate(),
+                end.toDate(),
+            ];
         } else {
             this.prices = [];
         }
     }
 
     buildGraph() {
-        const contentWidth = 850;
-        const contentHeight = 450;
-
-        const yAxisWidth = 50;
-        const xAxisHeight = 50;
-
-        const width = contentWidth + yAxisWidth;
-        const height = contentHeight + xAxisHeight;
-
         const prices = this.prices;
         const pricesTimes = prices.map(i => (i.date));
         const pricesValue = prices.map(i => i.price);
@@ -72,23 +90,54 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('viewBox', `0 0 ${width} ${height}`)
             .attr('preserveAspectRatio', 'xMinYMin meet');
 
-        this.svg.append('g').classed('graph-content', true);
+        this.svg.append('g')
+            .classed('x-axis', true)
+            .attr('transform', `translate(${marginLeft}, ${marginTop + contentHeight})`);
+
+        this.svg.append('g')
+            .classed('y-axis', true)
+            .attr('transform', `translate(${marginLeft + contentWidth}, ${marginTop})`);
+
+        this.svg.append('g').classed('graph-content', true)
+            .attr('transform', `translate(${marginLeft}, ${marginTop})`);
 
         const xScale = d3.scaleTime().range([0, contentWidth]);
         const yScale = d3.scaleLinear().range([contentHeight, 0]);
 
         xScale.domain([d3.min(pricesTimes), d3.max(pricesTimes)]);
-        yScale.domain([d3.min(pricesValue), d3.max(pricesValue)]).nice();
+        yScale.domain([d3.min(pricesValue), d3.max(pricesValue)]).nice(5);
 
-        // return;
+        // Background
+        this.svg.select('g.graph-content')
+            .append('rect')
+            .classed('graph-background', true)
+            .attr('width', contentWidth)
+            .attr('height', contentHeight)
+            .attr('rx', 9)
+            .attr('fill', '#fff');
+
+        // Grid
+        const gridData = yScale.ticks(5);
+        this.svg.select('g.graph-content')
+            .append('g')
+            .classed('graph-grid', true)
+            .selectAll('.y-grid-item')
+            .data(gridData.slice(0, gridData.length - 1))
+            .enter()
+            .append('line')
+            .classed('y-grid-item', true)
+            .attr('stroke-width', 2)
+            .attr('stroke', '#3f3f3f0a')
+            .attr('x1', 0)
+            .attr('x2', contentWidth)
+            .attr('y1', d => yScale(d))
+            .attr('y2', d => yScale(d));
 
         // Prices Line
-
         const line = d3.line()
             .x((d: any) => xScale(d.dateMs))
             .y((d: any) => yScale(d.price))
             .curve(d3.curveStepBefore);
-
         const linePath = this.svg.select('g.graph-content')
             .append('g')
             .classed('prices-line', true)
@@ -115,7 +164,6 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .y0(contentHeight)
             .y1((d: any) => yScale(d.price))
             .curve(d3.curveStepBefore);
-
         this.svg.select('g.graph-content')
             .append('g')
             .classed('prices-area', true)
@@ -131,7 +179,6 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
 
         // Incidents
-
         this.svg.select('g.graph-content')
             .append('g')
             .classed('incidents', true)
@@ -147,37 +194,81 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .delay(this.animDuration + 2e3)
             .attr('fill', '#0ea1e8')
             .attr('stroke-width', 3)
-            .attr('stroke', '#fff')
-            ;
+            .attr('stroke', '#fff');
+
+        // X Axis
+        this.svg.select('.x-axis')
+            .selectAll('.x-axis-item')
+            .data(this.xAxisDates)
+            .enter()
+            .append('text')
+            .classed('x-axis-item', true)
+            .text((d: any) => moment(d).format('HH:mm'))
+            .attr('x', d => xScale(d))
+            .attr('y', 20)
+            .attr('dominant-baseline', 'middle')
+            .attr('text-anchor', (d, i) => i === 0 ? 'start' : (i === 2 ? 'end' : 'middle'));
+
+        // Y Axis
+        this.svg.select('.y-axis')
+            .selectAll('.y-axis-item')
+            .data(yScale.ticks(5))
+            .enter()
+            .append('text')
+            .classed('y-axis-item', true)
+            .text(v => this.parseYAxisText(v))
+            .attr('x', 10)
+            .attr('y', d => yScale(d))
+            .attr('dominant-baseline', 'middle');
 
         this.built = true;
     }
 
     updateGraph() {
-        const width = 900;
-        const height = 500;
-
         const prices = this.prices;
-        const pricesTimes = prices.map(i => i.dateMs);
+        const pricesTimes = prices.map(i => (i.date));
         const pricesValue = prices.map(i => i.price);
 
-        const xScale = d3.scaleTime().range([0, width]);
-        const yScale = d3.scaleLinear().range([height, 0]);
+        const xScale = d3.scaleTime().range([0, contentWidth]);
+        const yScale = d3.scaleLinear().range([contentHeight, 0]);
 
         xScale.domain([d3.min(pricesTimes), d3.max(pricesTimes)]);
-        yScale.domain([d3.min(pricesValue), d3.max(pricesValue)]).nice();
+        yScale.domain([d3.min(pricesValue), d3.max(pricesValue)]).nice(5);
+
+        this.svg.append('g')
+            .classed('x-axis', true)
+            .attr('transform', `translate(0, ${marginTop + contentHeight})`);
+
+        this.svg.append('g')
+            .classed('y-axis', true)
+            .attr('transform', `translate(${contentWidth}, ${marginTop})`);
+
+        this.svg.append('g').classed('graph-content', true)
+            .attr('transform', `translate(0, ${marginTop})`);
+
+        // Grid
+        const gridData = yScale.ticks(5);
+        const gridGroup = this.svg.select('g.graph-grid');
+        gridGroup.selectAll('.y-grid-item').remove();
+        gridGroup.selectAll('.y-grid-item')
+            .data(gridData.slice(0, gridData.length - 1))
+            .enter()
+            .append('line')
+            .classed('y-grid-item', true)
+            .attr('stroke-width', 2)
+            .attr('stroke', '#3f3f3f0a')
+            .attr('x1', 0)
+            .attr('x2', contentWidth)
+            .attr('y1', d => yScale(d))
+            .attr('y2', d => yScale(d));
 
         // Line
-
         const line = d3.line()
             .x((d: any) => xScale(d.date))
             .y((d: any) => yScale(d.price))
             .curve(d3.curveStepBefore);
-
         const lineGroup = this.svg.select('.prices-line');
-
         lineGroup.select('path').remove();
-
         const linePath = lineGroup
             .append('path')
             .datum(prices)
@@ -187,7 +278,6 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('d', line as any);
 
         // Line animation
-
         const totalLength = linePath.node().getTotalLength();
         linePath
             .attr('stroke-dasharray', totalLength + ' ' + totalLength)
@@ -197,17 +287,14 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .ease((d) => d)
             .attr('stroke-dashoffset', 0);
 
-
         // Prices Area
         const area = d3.area()
             .x((d: any) => xScale(d.dateMs))
-            .y0(height)
+            .y0(contentHeight)
             .y1((d: any) => yScale(d.price))
             .curve(d3.curveStepBefore);
-
         const areaGroup = this.svg.select('.prices-area');
         areaGroup.select('path').remove();
-
         areaGroup
             .append('path')
             .datum(prices)
@@ -220,11 +307,8 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('fill', '#0ea1e80f');
 
         // Incidents
-
         const circlesGroup = this.svg.select('g.incidents');
-
         circlesGroup.selectAll('circle').remove();
-
         circlesGroup
             .selectAll('circle')
             .data(this.incidents)
@@ -238,10 +322,42 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .delay(this.animDuration + 1.2e3)
             .attr('fill', '#0ea1e8')
             .attr('stroke-width', 3)
-            .attr('stroke', '#fff')
-            ;
+            .attr('stroke', '#fff');
+
+        // X Axis
+        const xAxisGroup = this.svg.select('.x-axis');
+        xAxisGroup.selectAll('.x-axis-item').remove();
+        xAxisGroup.selectAll('.x-axis-item')
+            .data(this.xAxisDates)
+            .enter()
+            .append('text')
+            .classed('x-axis-item', true)
+            .text((d: any) => moment(d).format('HH:mm'))
+            .attr('x', d => xScale(d))
+            .attr('y', 20)
+            .attr('dominant-baseline', 'middle')
+            .attr('text-anchor', (d, i) => i === 0 ? 'start' : (i === 2 ? 'end' : 'middle'));
+
+        // Y Axis
+        const yAxisGroup = this.svg.select('.y-axis');
+        yAxisGroup.selectAll('.y-axis-item').remove();
+        yAxisGroup
+            .selectAll('.y-axis-item')
+            .data(yScale.ticks(5))
+            .enter()
+            .append('text')
+            .classed('y-axis-item', true)
+            .text(v => this.parseYAxisText(v))
+            .attr('x', 10)
+            .attr('y', d => yScale(d))
+            .attr('dominant-baseline', 'middle');
 
 
+    }
+
+    private parseYAxisText(v: any) {
+        v = (+v / 1e2);
+        return this.currency.transform(v, 'EUR');
     }
 
 }
