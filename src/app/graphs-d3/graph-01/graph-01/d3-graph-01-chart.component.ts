@@ -1,5 +1,5 @@
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
-import { Component, ElementRef, Input, OnChanges, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import * as moment from 'moment';
 
@@ -17,11 +17,16 @@ const height = contentHeight + xAxisHeight;
 @Component({
     selector: 'app-d3-chart',
     template: '',
-    providers: [CurrencyPipe]
+    styleUrls: ['d3-graph-01-chart.component.scss'],
+    providers: [CurrencyPipe],
+    encapsulation: ViewEncapsulation.None
 })
 export class D3Graph01ChartComponent implements OnInit, OnChanges {
     @Input() incidents: any[];
     @Input() prices: any[];
+    @Input() selected: any[];
+    @Input() selectedIndex: number;
+    @Output() selectedIndexChange = new EventEmitter();
 
     private built: boolean;
     private hasData: boolean;
@@ -46,8 +51,14 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
         this.build();
     }
 
-    ngOnChanges() {
-        this.build();
+    ngOnChanges(changes: SimpleChanges) {
+        const shouldRebuild = (changes.incidents && changes.incidents.previousValue !== changes.incidents.currentValue) ||
+            (changes.prices && changes.prices.previousValue !== changes.prices.currentValue);
+        if (shouldRebuild) {
+            this.build();
+        } else if (this.built) {
+            this.updateSelectedIncident();
+        }
     }
 
     build() {
@@ -97,6 +108,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
         this.svg = d3.select(this.elRef.nativeElement as any)
             .append('svg')
+            .classed('d3-graph-01', true)
             .attr('viewBox', `0 0 ${width} ${height}`)
             .attr('preserveAspectRatio', 'xMinYMin meet');
 
@@ -191,13 +203,15 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
 
         // Incidents
-        this.svg.select('g.graph-content')
+        const incidentsItems = this.svg.select('g.graph-content')
             .append('g')
             .classed('incidents', true)
-            .selectAll('circle')
+            .selectAll('g.incident-item')
             .data(this.incidents)
             .enter()
-            .append('circle')
+            .append('g')
+            .classed('incident-item', true);
+        incidentsItems.append('circle')
             .attr('r', 7)
             .attr('cx', (d: any) => this.xScale(d.lastDate) - 1)
             .attr('cy', (d: any) => this.yScale(d.lastPrice))
@@ -207,6 +221,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('fill', '#0ea1e8')
             .attr('stroke-width', 3)
             .attr('stroke', '#fff');
+        incidentsItems.on('click', (e, d) => this.onIncidentClick(d));
 
         // X Axis
         this.svg.select('.x-axis')
@@ -234,6 +249,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('dominant-baseline', 'middle');
 
         this.buildPriceAnnotation();
+        this.updateSelectedIncident();
 
         this.built = true;
     }
@@ -378,11 +394,14 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
         // Incidents
         const circlesGroup = this.svg.select('g.incidents');
-        circlesGroup.selectAll('circle').remove();
-        circlesGroup
-            .selectAll('circle')
+        circlesGroup.selectAll('g.incident-item').remove();
+        const incidentsItems = circlesGroup
+            .selectAll('g.incident-item')
             .data(this.incidents)
             .enter()
+            .append('g')
+            .classed('incident-item', true);
+        incidentsItems
             .append('circle')
             .attr('r', 8)
             .attr('cx', (d: any) => this.xScale(d.lastDate) - 1)
@@ -393,6 +412,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('fill', '#0ea1e8')
             .attr('stroke-width', 3)
             .attr('stroke', '#fff');
+        incidentsItems.on('click', (e, d) => this.onIncidentClick(d));
 
         // X Axis
         const xAxisGroup = this.svg.select('.x-axis');
@@ -423,6 +443,8 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('dominant-baseline', 'middle');
 
         this.updatePriceAnnotation();
+        this.updateSelectedIncident();
+
     }
 
     updatePriceAnnotation() {
@@ -441,13 +463,26 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
     }
 
-    private get priceIncreaseText() {
-        return this.priceIncrease > 0 ? `+${this.priceIncrease.toFixed(1)}%` : `${this.priceIncrease.toFixed(1)}%`;
+    updateSelectedIncident() {
+        this.svg.select('g.incidents').selectAll('circle')
+            .classed('active', (d, i) => {
+                // console.log({ d, i });
+                return this.selectedIndex === i;
+            });
+    }
+
+    onIncidentClick(item) {
+        const index = this.incidents.indexOf(item);
+        this.selectedIndexChange.emit(index);
     }
 
     private parseYAxisText(v: any) {
         v = (+v / 1e2);
         return this.currency.transform(v, 'EUR');
+    }
+
+    private get priceIncreaseText() {
+        return this.priceIncrease > 0 ? `+${this.priceIncrease.toFixed(1)}%` : `${this.priceIncrease.toFixed(1)}%`;
     }
 
 }

@@ -1,0 +1,11 @@
+.d3-graph-01 {
+    g.graph-content {
+        g.incidents {
+            circle {
+                &.active {
+                    fill: #0e71c8 !important;
+                }
+            }
+        }
+    }
+}

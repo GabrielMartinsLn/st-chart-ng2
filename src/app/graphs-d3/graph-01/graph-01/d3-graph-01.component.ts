@@ -12,6 +12,7 @@ export class D3Graph01Component implements OnInit {
 
     prices: any;
     incidents: any;
+    selected: any;
 
     constructor(
         private dataService: DataService
@@ -47,6 +48,8 @@ export class D3Graph01Component implements OnInit {
         for (const i of this.incidents) {
             Object.assign(i, this.getPriceAtMoment(i.date) || {});
         }
+        const lastIndex = this.incidents.length - 1;
+        this.selectByIndex(lastIndex);
     }
 
     getPriceAtMoment(date: string | Date) {
@@ -68,12 +71,20 @@ export class D3Graph01Component implements OnInit {
         };
     }
 
-    get selected() {
-        if (!this.incidents) { return null; }
-        if (!this.index) {
-            return this.incidents[0];
+    select(item) {
+        this.selected = item;
+    }
+
+    selectByIndex(index: number) {
+        const item = this.incidents[index];
+        this.selected = item || null;
+    }
+
+    get selectedIndex() {
+        if (!Array.isArray(this.incidents) || !this.incidents.length) {
+            return null;
         }
-        return this.incidents[this.index];
+        return this.incidents.indexOf(this.selected);
     }
 
     get finalScore() {

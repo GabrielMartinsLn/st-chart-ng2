@@ -12,7 +12,8 @@
             <i class="fa fa-chevron-right"></i>
         </button>
     </div>
-    <app-d3-chart [prices]="prices" [incidents]="incidents"></app-d3-chart>
+    <app-d3-chart [prices]="prices" [incidents]="incidents" [selectedIndex]="selectedIndex"
+        (selectedIndexChange)="selectByIndex($event)"></app-d3-chart>
 </div>
 
 <div class="x-selectors">
