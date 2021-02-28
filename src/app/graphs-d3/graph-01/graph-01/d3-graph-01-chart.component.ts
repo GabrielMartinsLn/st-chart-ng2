@@ -5,7 +5,7 @@ import * as moment from 'moment';
 
 const marginLeft = 10;
 const marginTop = 10;
-const contentWidth = 850;
+const contentWidth = 700;
 const contentHeight = 450;
 
 const yAxisWidth = 99;
