@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IncidentItem } from '../graph-01.service';
+import { IncidentItem } from '../../graphs-ng2/graph-01/graph-01.service';
+
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-selected-item',
@@ -16,7 +18,7 @@ export class SelectedItemComponent implements OnInit {
   }
 
   get date() {
-    return this.item.$$moment.format('L');
+    return moment(this.item.date).format('L');
   }
 
   get score() {

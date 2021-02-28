@@ -1,3 +1,16 @@
 <div class="graph-wrap" (swipe)="onSwipe($event)">
+    <div class="graph-top">
+        <button class="graph-switch-button switch-left" (click)="previous()">
+            <i class="fa fa-chevron-left"></i>
+        </button>
+
+        <div class="select-point">
+            <app-selected-item [item]="selected" [finalScore]="finalScore"></app-selected-item>
+        </div>
+
+        <button class="graph-switch-button switch-right" (click)="next()">
+            <i class="fa fa-chevron-right"></i>
+        </button>
+    </div>
     <app-d3-chart [prices]="prices" [incidents]="incidents"></app-d3-chart>
 </div>

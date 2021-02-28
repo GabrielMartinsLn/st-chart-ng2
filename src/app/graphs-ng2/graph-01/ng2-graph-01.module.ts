@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ChartsModule } from 'ng2-charts';
 
 import { Graph01Component } from './graph-01.component';
-import { SelectedItemComponent } from './selected-item/selected-item.component';
+import { GraphCommonModule } from '../../common/graph-common.module';
 
 const routes: Routes = [{
     path: '',
@@ -15,9 +15,10 @@ const routes: Routes = [{
     imports: [
         CommonModule,
         ChartsModule,
+        GraphCommonModule,
         RouterModule.forChild(routes)
     ],
-    declarations: [Graph01Component, SelectedItemComponent],
+    declarations: [Graph01Component],
     providers: [CurrencyPipe]
 })
 export class Ng2Graph01Module { }

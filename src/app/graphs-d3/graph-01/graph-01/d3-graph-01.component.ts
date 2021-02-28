@@ -68,4 +68,19 @@ export class D3Graph01Component implements OnInit {
         };
     }
 
+    get selected() {
+        if (!this.incidents) { return null; }
+        if (!this.index) {
+            return this.incidents[0];
+        }
+        return this.incidents[this.index];
+    }
+
+    get finalScore() {
+        const score = Array.isArray(this.incidents) && this.incidents.length &&
+            this.incidents[this.incidents.length - 1].score || '';
+
+        return score.split(':').join('-');
+    }
+
 }

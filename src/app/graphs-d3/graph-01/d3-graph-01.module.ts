@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { ChartsModule } from 'ng2-charts';
+import { GraphCommonModule } from 'src/app/common/graph-common.module';
 import { D3Graph01Component } from './graph-01/d3-graph-01.component';
 import { D3Graph01ChartComponent } from './graph-01/d3-graph-01-chart.component';
 
@@ -13,7 +13,7 @@ const routes: Routes = [{
 @NgModule({
     imports: [
         CommonModule,
-        ChartsModule,
+        GraphCommonModule,
         RouterModule.forChild(routes)
     ],
     declarations: [
