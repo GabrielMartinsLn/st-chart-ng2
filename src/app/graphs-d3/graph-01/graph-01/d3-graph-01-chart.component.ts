@@ -256,7 +256,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
     buildPriceAnnotation() {
         const w = 80;
-        const h = 26;
+        const h = 24;
         const w2 = h / 3;
         const x = contentWidth + marginLeft + 9;
         const y = this.yScale(this.lastPrice) + marginTop - h / 2;
@@ -287,7 +287,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('x', (w + w2) * .5)
             .attr('y', h * .5)
             .attr('fill', '#fff')
-            .attr('font-size', 18)
+            .attr('font-size', 16)
             .attr('font-weight', 900)
             .attr('dominant-baseline', 'middle')
             .attr('text-anchor', 'middle');
@@ -307,7 +307,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('x', (w + w2) * .5)
             .attr('y', h * 1.5)
             .attr('fill', '#fff')
-            .attr('font-size', 18)
+            .attr('font-size', 16)
             .attr('font-weight', 900)
             .attr('dominant-baseline', 'middle')
             .attr('text-anchor', 'middle');
@@ -448,7 +448,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
     }
 
     updatePriceAnnotation() {
-        const h = 26;
+        const h = 24;
         const x = contentWidth + marginLeft + 9;
         const y = this.yScale(this.lastPrice) + marginTop - h / 2;
         // Annotation
