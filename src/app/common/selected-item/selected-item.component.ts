@@ -21,6 +21,10 @@ export class SelectedItemComponent implements OnInit {
     return moment(this.item.date).format('L');
   }
 
+  get clockTime() {
+    return `${this.item.clockTime.split(':')[0]}’`;
+  }
+
   get score() {
     return this.item?.score?.split(':').join('-');
   }
