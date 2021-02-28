@@ -168,7 +168,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .append('path')
             .datum(prices)
             .attr('fill', 'none')
-            .attr('stroke-width', 3)
+            .attr('stroke-width', 2)
             .attr('stroke', '#0ea1e8')
             .attr('d', line);
 
@@ -359,7 +359,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .append('path')
             .datum(prices)
             .attr('fill', 'none')
-            .attr('stroke-width', 3)
+            .attr('stroke-width', 2)
             .attr('stroke', '#0ea1e8')
             .attr('d', line as any);
 
