@@ -34,6 +34,9 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
     private lastPrice: number;
     private priceIncrease: number;
 
+    private xScale: d3.ScaleTime<number, number, never>;
+    private yScale: d3.ScaleLinear<number, number, never>;
+
     constructor(
         private elRef: ElementRef,
         private currency: CurrencyPipe
@@ -92,8 +95,6 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
         const pricesTimes = prices.map(i => (i.date));
         const pricesValue = prices.map(i => i.price);
 
-        const last = pricesValue[pricesValue.length - 1];
-
         this.svg = d3.select(this.elRef.nativeElement as any)
             .append('svg')
             .attr('viewBox', `0 0 ${width} ${height}`)
@@ -112,11 +113,11 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
         this.svg.append('g').classed('price-annotation', true);
 
-        const xScale = d3.scaleTime().range([0, contentWidth]);
-        const yScale = d3.scaleLinear().range([contentHeight, 0]);
+        this.xScale = d3.scaleTime().range([0, contentWidth]);
+        this.yScale = d3.scaleLinear().range([contentHeight, 0]);
 
-        xScale.domain([d3.min(pricesTimes), d3.max(pricesTimes)]);
-        yScale.domain([d3.min(pricesValue), d3.max(pricesValue)]).nice(5);
+        this.xScale.domain([d3.min(pricesTimes), d3.max(pricesTimes)]);
+        this.yScale.domain([d3.min(pricesValue), d3.max(pricesValue)]).nice(5);
 
         // Background
         this.svg.select('g.graph-content')
@@ -128,7 +129,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('fill', '#fff');
 
         // Grid
-        const gridData = yScale.ticks(5);
+        const gridData = this.yScale.ticks(5);
         this.svg.select('g.graph-content')
             .append('g')
             .classed('graph-grid', true)
@@ -141,13 +142,13 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('stroke', '#3f3f3f15')
             .attr('x1', 0)
             .attr('x2', contentWidth)
-            .attr('y1', d => yScale(d))
-            .attr('y2', d => yScale(d));
+            .attr('y1', d => this.yScale(d))
+            .attr('y2', d => this.yScale(d));
 
         // Prices Line
         const line = d3.line()
-            .x((d: any) => xScale(d.dateMs))
-            .y((d: any) => yScale(d.price))
+            .x((d: any) => this.xScale(d.dateMs))
+            .y((d: any) => this.yScale(d.price))
             .curve(d3.curveStepBefore);
         const linePath = this.svg.select('g.graph-content')
             .append('g')
@@ -171,9 +172,9 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
         // Prices Area
         const area = d3.area()
-            .x((d: any) => xScale(d.dateMs))
+            .x((d: any) => this.xScale(d.dateMs))
             .y0(contentHeight)
-            .y1((d: any) => yScale(d.price))
+            .y1((d: any) => this.yScale(d.price))
             .curve(d3.curveStepBefore);
         this.svg.select('g.graph-content')
             .append('g')
@@ -198,8 +199,8 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .enter()
             .append('circle')
             .attr('r', 7)
-            .attr('cx', (d: any) => xScale(d.lastDate) - 1)
-            .attr('cy', (d: any) => yScale(d.lastPrice))
+            .attr('cx', (d: any) => this.xScale(d.lastDate) - 1)
+            .attr('cy', (d: any) => this.yScale(d.lastPrice))
             .attr('fill', 'none')
             .transition()
             .delay(this.animDuration + 2e3)
@@ -215,7 +216,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .append('text')
             .classed('x-axis-item', true)
             .text((d: any) => moment(d).format('HH:mm'))
-            .attr('x', d => xScale(d))
+            .attr('x', d => this.xScale(d))
             .attr('y', 20)
             .attr('dominant-baseline', 'middle')
             .attr('text-anchor', (d, i) => i === 0 ? 'start' : (i === 2 ? 'end' : 'middle'));
@@ -223,29 +224,26 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
         // Y Axis
         this.svg.select('.y-axis')
             .selectAll('.y-axis-item')
-            .data(yScale.ticks(5))
+            .data(this.yScale.ticks(5))
             .enter()
             .append('text')
             .classed('y-axis-item', true)
             .text(v => this.parseYAxisText(v))
             .attr('x', 10)
-            .attr('y', d => yScale(d))
+            .attr('y', d => this.yScale(d))
             .attr('dominant-baseline', 'middle');
 
-        this.buildPriceAnnotation(
-            yScale(last)
-        );
+        this.buildPriceAnnotation();
 
         this.built = true;
     }
 
-    buildPriceAnnotation(yValue) {
+    buildPriceAnnotation() {
         const w = 80;
         const h = 26;
         const w2 = h / 3;
-        console.log(marginLeft + 9 + w);
         const x = contentWidth + marginLeft + 9;
-        const y = yValue + marginTop - h / 2;
+        const y = this.yScale(this.lastPrice) + marginTop - h / 2;
         const poly = [
             { x: 0, y: h / 2 },
             { x: w2, y: 0 },
@@ -304,13 +302,8 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
         const pricesTimes = prices.map(i => (i.date));
         const pricesValue = prices.map(i => i.price);
 
-        const last = pricesValue[pricesValue.length - 1];
-
-        const xScale = d3.scaleTime().range([0, contentWidth]);
-        const yScale = d3.scaleLinear().range([contentHeight, 0]);
-
-        xScale.domain([d3.min(pricesTimes), d3.max(pricesTimes)]);
-        yScale.domain([d3.min(pricesValue), d3.max(pricesValue)]).nice(5);
+        this.xScale.domain([d3.min(pricesTimes), d3.max(pricesTimes)]);
+        this.yScale.domain([d3.min(pricesValue), d3.max(pricesValue)]).nice(5);
 
         this.svg.append('g')
             .classed('x-axis', true)
@@ -324,7 +317,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('transform', `translate(0, ${marginTop})`);
 
         // Grid
-        const gridData = yScale.ticks(5);
+        const gridData = this.yScale.ticks(5);
         const gridGroup = this.svg.select('g.graph-grid');
         gridGroup.selectAll('.y-grid-item').remove();
         gridGroup.selectAll('.y-grid-item')
@@ -336,13 +329,13 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('stroke', '#3f3f3f15')
             .attr('x1', 0)
             .attr('x2', contentWidth)
-            .attr('y1', d => yScale(d))
-            .attr('y2', d => yScale(d));
+            .attr('y1', d => this.yScale(d))
+            .attr('y2', d => this.yScale(d));
 
         // Line
         const line = d3.line()
-            .x((d: any) => xScale(d.date))
-            .y((d: any) => yScale(d.price))
+            .x((d: any) => this.xScale(d.date))
+            .y((d: any) => this.yScale(d.price))
             .curve(d3.curveStepBefore);
         const lineGroup = this.svg.select('.prices-line');
         lineGroup.select('path').remove();
@@ -366,9 +359,9 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
         // Prices Area
         const area = d3.area()
-            .x((d: any) => xScale(d.dateMs))
+            .x((d: any) => this.xScale(d.dateMs))
             .y0(contentHeight)
-            .y1((d: any) => yScale(d.price))
+            .y1((d: any) => this.yScale(d.price))
             .curve(d3.curveStepBefore);
         const areaGroup = this.svg.select('.prices-area');
         areaGroup.select('path').remove();
@@ -392,8 +385,8 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .enter()
             .append('circle')
             .attr('r', 8)
-            .attr('cx', (d: any) => xScale(d.lastDate) - 1)
-            .attr('cy', (d: any) => yScale(d.lastPrice))
+            .attr('cx', (d: any) => this.xScale(d.lastDate) - 1)
+            .attr('cy', (d: any) => this.yScale(d.lastPrice))
             .attr('fill', 'none')
             .transition()
             .delay(this.animDuration + 1.2e3)
@@ -410,7 +403,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .append('text')
             .classed('x-axis-item', true)
             .text((d: any) => moment(d).format('HH:mm'))
-            .attr('x', d => xScale(d))
+            .attr('x', d => this.xScale(d))
             .attr('y', 20)
             .attr('dominant-baseline', 'middle')
             .attr('text-anchor', (d, i) => i === 0 ? 'start' : (i === 2 ? 'end' : 'middle'));
@@ -420,23 +413,22 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
         yAxisGroup.selectAll('.y-axis-item').remove();
         yAxisGroup
             .selectAll('.y-axis-item')
-            .data(yScale.ticks(5))
+            .data(this.yScale.ticks(5))
             .enter()
             .append('text')
             .classed('y-axis-item', true)
             .text(v => this.parseYAxisText(v))
             .attr('x', 10)
-            .attr('y', d => yScale(d))
+            .attr('y', d => this.yScale(d))
             .attr('dominant-baseline', 'middle');
 
-        this.updatePriceAnnotation(yScale(last));
+        this.updatePriceAnnotation();
     }
 
-    updatePriceAnnotation(yValue) {
-        const w = 80;
+    updatePriceAnnotation() {
         const h = 26;
         const x = contentWidth + marginLeft + 9;
-        const y = yValue + marginTop - h / 2;
+        const y = this.yScale(this.lastPrice) + marginTop - h / 2;
         // Annotation
         this.svg.select('g.price-annotation')
             .attr('transform', `translate(${x}, ${y})`);
