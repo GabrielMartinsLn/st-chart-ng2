@@ -27,7 +27,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
     private hasData: boolean;
     private svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
 
-    private animDuration = 1.2e3;
+    private animDuration = .6e3;
 
     private xAxisDates: Date[];
 
@@ -203,7 +203,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('cy', (d: any) => this.yScale(d.lastPrice))
             .attr('fill', 'none')
             .transition()
-            .delay(this.animDuration + 2e3)
+            .delay(this.animDuration + 1.2e3)
             .attr('fill', '#0ea1e8')
             .attr('stroke-width', 3)
             .attr('stroke', '#fff');
@@ -373,7 +373,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('d', area)
             .attr('fill', '#0ea1e800')
             .transition()
-            .duration(.8e3)
+            .duration(.5e3)
             .attr('fill', '#0ea1e80f');
 
         // Incidents
@@ -389,7 +389,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('cy', (d: any) => this.yScale(d.lastPrice))
             .attr('fill', 'none')
             .transition()
-            .delay(this.animDuration + 1.2e3)
+            .delay(this.animDuration + .6e3)
             .attr('fill', '#0ea1e8')
             .attr('stroke-width', 3)
             .attr('stroke', '#fff');
