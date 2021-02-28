@@ -8,7 +8,7 @@ const marginTop = 10;
 const contentWidth = 850;
 const contentHeight = 450;
 
-const yAxisWidth = 50;
+const yAxisWidth = 99;
 const xAxisHeight = 50;
 
 const width = marginLeft + contentWidth + yAxisWidth;
@@ -30,6 +30,9 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
     private animDuration = 1.2e3;
 
     private xAxisDates: Date[];
+
+    private lastPrice: number;
+    private priceIncrease: number;
 
     constructor(
         private elRef: ElementRef,
@@ -75,6 +78,10 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
                 begin.clone().add(d / 2, 'minutes').toDate(),
                 end.toDate(),
             ];
+            const firstPrice = this.prices[0].price;
+            const lastIndex = Math.max(0, this.prices.length - 1);
+            this.lastPrice = this.prices[lastIndex].price;
+            this.priceIncrease = (100 * this.lastPrice) / firstPrice - 100;
         } else {
             this.prices = [];
         }
@@ -84,6 +91,8 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
         const prices = this.prices;
         const pricesTimes = prices.map(i => (i.date));
         const pricesValue = prices.map(i => i.price);
+
+        const last = pricesValue[pricesValue.length - 1];
 
         this.svg = d3.select(this.elRef.nativeElement as any)
             .append('svg')
@@ -100,6 +109,8 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
 
         this.svg.append('g').classed('graph-content', true)
             .attr('transform', `translate(${marginLeft}, ${marginTop})`);
+
+        this.svg.append('g').classed('price-annotation', true);
 
         const xScale = d3.scaleTime().range([0, contentWidth]);
         const yScale = d3.scaleLinear().range([contentHeight, 0]);
@@ -127,7 +138,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .append('line')
             .classed('y-grid-item', true)
             .attr('stroke-width', 2)
-            .attr('stroke', '#3f3f3f0a')
+            .attr('stroke', '#3f3f3f15')
             .attr('x1', 0)
             .attr('x2', contentWidth)
             .attr('y1', d => yScale(d))
@@ -144,7 +155,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .append('path')
             .datum(prices)
             .attr('fill', 'none')
-            .attr('stroke-width', 2)
+            .attr('stroke-width', 3)
             .attr('stroke', '#0ea1e8')
             .attr('d', line);
 
@@ -221,13 +232,79 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('y', d => yScale(d))
             .attr('dominant-baseline', 'middle');
 
+        this.buildPriceAnnotation(
+            yScale(last)
+        );
+
         this.built = true;
+    }
+
+    buildPriceAnnotation(yValue) {
+        const w = 80;
+        const h = 26;
+        const w2 = h / 3;
+        console.log(marginLeft + 9 + w);
+        const x = contentWidth + marginLeft + 9;
+        const y = yValue + marginTop - h / 2;
+        const poly = [
+            { x: 0, y: h / 2 },
+            { x: w2, y: 0 },
+            { x: w, y: 0 },
+            { x: w, y: h },
+            { x: w2, y: h },
+            { x: 0, y: h / 2 },
+        ];
+        // Annotation
+        this.svg.select('g.price-annotation')
+            .attr('transform', `translate(${x}, ${y})`);
+        // Box 1
+        this.svg.select('g.price-annotation')
+            .selectAll('polygon')
+            .data([poly])
+            .enter()
+            .append('polygon')
+            .attr('fill', '#0ea1e8')
+            .attr('points', d => d.map(i => [i.x, i.y]).join(','));
+        // Box 1 Text
+        this.svg.select('g.price-annotation')
+            .append('text')
+            .classed('price-text1', true)
+            .text(() => this.parseYAxisText(this.lastPrice))
+            .attr('x', (w + w2) * .5)
+            .attr('y', h * .5)
+            .attr('fill', '#fff')
+            .attr('font-size', 18)
+            .attr('font-weight', 900)
+            .attr('dominant-baseline', 'middle')
+            .attr('text-anchor', 'middle');
+        // Box 2
+        this.svg.select('g.price-annotation')
+            .append('rect')
+            .attr('x', w2)
+            .attr('y', h - .5)
+            .attr('width', w - w2)
+            .attr('height', h)
+            .attr('fill', '#5ed56d');
+        // Box 2 Text
+        this.svg.select('g.price-annotation')
+            .append('text')
+            .classed('price-text2', true)
+            .text(this.priceIncreaseText)
+            .attr('x', (w + w2) * .5)
+            .attr('y', h * 1.5)
+            .attr('fill', '#fff')
+            .attr('font-size', 18)
+            .attr('font-weight', 900)
+            .attr('dominant-baseline', 'middle')
+            .attr('text-anchor', 'middle');
     }
 
     updateGraph() {
         const prices = this.prices;
         const pricesTimes = prices.map(i => (i.date));
         const pricesValue = prices.map(i => i.price);
+
+        const last = pricesValue[pricesValue.length - 1];
 
         const xScale = d3.scaleTime().range([0, contentWidth]);
         const yScale = d3.scaleLinear().range([contentHeight, 0]);
@@ -256,7 +333,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .append('line')
             .classed('y-grid-item', true)
             .attr('stroke-width', 2)
-            .attr('stroke', '#3f3f3f0a')
+            .attr('stroke', '#3f3f3f15')
             .attr('x1', 0)
             .attr('x2', contentWidth)
             .attr('y1', d => yScale(d))
@@ -273,7 +350,7 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .append('path')
             .datum(prices)
             .attr('fill', 'none')
-            .attr('stroke-width', 2)
+            .attr('stroke-width', 3)
             .attr('stroke', '#0ea1e8')
             .attr('d', line as any);
 
@@ -352,7 +429,28 @@ export class D3Graph01ChartComponent implements OnInit, OnChanges {
             .attr('y', d => yScale(d))
             .attr('dominant-baseline', 'middle');
 
+        this.updatePriceAnnotation(yScale(last));
+    }
 
+    updatePriceAnnotation(yValue) {
+        const w = 80;
+        const h = 26;
+        const x = contentWidth + marginLeft + 9;
+        const y = yValue + marginTop - h / 2;
+        // Annotation
+        this.svg.select('g.price-annotation')
+            .attr('transform', `translate(${x}, ${y})`);
+        this.svg.select('g.price-annotation')
+            .select('.price-text1')
+            .text(this.parseYAxisText(this.lastPrice));
+        this.svg.select('g.price-annotation')
+            .select('.price-text2')
+            .text(this.priceIncreaseText);
+
+    }
+
+    private get priceIncreaseText() {
+        return this.priceIncrease > 0 ? `+${this.priceIncrease.toFixed(1)}%` : `${this.priceIncrease.toFixed(1)}%`;
     }
 
     private parseYAxisText(v: any) {
